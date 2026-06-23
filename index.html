@@ -664,8 +664,8 @@ footer{background:var(--bg-deep); border-top:1px solid var(--border); padding:va
   display:flex; align-items:center; justify-content:center;
   position:relative; perspective:1300px; height:440px;
 }
-@media(max-width:900px){.demo-track{height:300px;}}
-@media(max-width:560px){.demo-track{height:195px;}}
+@media(max-width:900px){.demo-track{height:260px;}}
+@media(max-width:560px){.demo-track{height:160px;}}
 .demo-slide{
   position:absolute; width:62%;
   border-radius:var(--r-ui); overflow:hidden;
@@ -673,18 +673,20 @@ footer{background:var(--bg-deep); border-top:1px solid var(--border); padding:va
   transition:transform 550ms cubic-bezier(0.16,1,0.3,1), opacity 550ms ease, filter 550ms ease, box-shadow 550ms ease;
   cursor:pointer; will-change:transform,opacity;
 }
+@media(max-width:560px){.demo-slide{width:78%;}}
 .demo-slide video{width:100%; height:100%; object-fit:cover; display:block;}
 .demo-slide:not(.is-active) .demo-overlay{opacity:0;}
 .demo-overlay{
   position:absolute; bottom:0; left:0; right:0; z-index:2; pointer-events:none;
   background:rgba(8,10,13,0.94);
   display:flex; flex-direction:row; align-items:center;
-  padding:10px 16px; gap:10px; overflow:hidden;
+  padding:8px 12px; gap:8px; overflow:hidden;
   transition:opacity 300ms ease;
 }
-.demo-overlay-k{font-size:0.62rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--accent); font-weight:700; flex-shrink:0; white-space:nowrap;}
-.demo-overlay-sep{color:rgba(255,255,255,0.25); font-size:0.75rem; flex-shrink:0;}
-.demo-overlay-t{font-family:var(--font-display); font-weight:700; font-size:1rem; color:#fff; line-height:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.demo-overlay-k{font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent); font-weight:700; flex-shrink:0; white-space:nowrap;}
+.demo-overlay-sep{color:rgba(255,255,255,0.25); font-size:0.7rem; flex-shrink:0;}
+.demo-overlay-t{font-family:var(--font-display); font-weight:700; font-size:0.82rem; color:#fff; line-height:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+@media(max-width:560px){.demo-overlay{padding:6px 10px; gap:6px;} .demo-overlay-t{font-size:0.72rem;}}
 .demo-arrow{
   position:absolute; top:50%; transform:translateY(-50%); z-index:10;
   width:44px; height:44px; border-radius:999px;
@@ -696,9 +698,10 @@ footer{background:var(--bg-deep); border-top:1px solid var(--border); padding:va
 .demo-arrow.prev{left:var(--s3);}
 .demo-arrow.next{right:var(--s3);}
 .demo-arrow svg{width:20px; height:20px;}
-.demo-dots{display:flex; justify-content:center; gap:8px; margin-top:var(--s4);}
-.demo-dot{width:6px; height:6px; border-radius:999px; background:var(--border-strong); cursor:pointer; transition:background var(--dur-base) var(--ease-std), width var(--dur-base) var(--ease-std);}
-.demo-dot.active{background:var(--accent); width:24px;}
+.demo-dots{display:flex; justify-content:center; gap:5px; margin-top:var(--s4); flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; padding:4px 0; max-width:100%;}
+.demo-dots::-webkit-scrollbar{display:none;}
+.demo-dot{width:5px; height:5px; flex-shrink:0; border-radius:999px; background:var(--border-strong); cursor:pointer; transition:background var(--dur-base) var(--ease-std), width var(--dur-base) var(--ease-std);}
+.demo-dot.active{background:var(--accent); width:20px;}
 </style>
 </head>
 <body>
