@@ -802,10 +802,10 @@ footer{background:var(--bg-deep); border-top:1px solid var(--border); padding:va
       <h2>Destacados en acción</h2>
     </div>
     <div class="dest-tabs">
-      <button class="dest-tab active" data-tab="0">Destacado 1</button>
-      <button class="dest-tab" data-tab="1">Destacado 2</button>
-      <button class="dest-tab" data-tab="2">Destacado 3</button>
-      <button class="dest-tab" data-tab="3">Destacado 4</button>
+      <button class="dest-tab active" data-tab="0">Secc. Long. Vigas</button>
+      <button class="dest-tab" data-tab="1">Alzado Columnas</button>
+      <button class="dest-tab" data-tab="2">Acero Columnas</button>
+      <button class="dest-tab" data-tab="3">Acotado por Puntos</button>
     </div>
     <div class="dest-panels">
       <div class="dest-panel active" data-panel="0">
@@ -1018,15 +1018,24 @@ footer{background:var(--bg-deep); border-top:1px solid var(--border); padding:va
    Vacío = se muestran los marcadores de posición.        */
 const AVAILABLE_VIDEOS = [
   'videos/portada.mp4',
-  'videos/V-P1-1.mp4',
-  'videos/V-P1-2.mp4',
-  'videos/V-P1-3.mp4',
-  'videos/V-P1-4.mp4',
-  'videos/V-P1-5.mp4',
-  'videos/V-D1.mp4',
-  'videos/V-D2.mp4',
-  'videos/V-D3.mp4',
-  'videos/V-D4.mp4',
+  'videos/hero-bg.mp4',
+  // Panel 1 — Aceros
+  'videos/V-P1-1.mp4','videos/V-P1-2.mp4','videos/V-P1-3.mp4',
+  'videos/V-P1-4.mp4','videos/V-P1-5.mp4','videos/V-P1-6.mp4',
+  'videos/V-P1-7.mp4','videos/V-P1-8.mp4',
+  // Panel 2 — Documentación
+  'videos/V-P2-1.mp4','videos/V-P2-2.mp4','videos/V-P2-3.mp4',
+  'videos/V-P2-4.mp4','videos/V-P2-5.mp4','videos/V-P2-6.mp4',
+  'videos/V-P2-7.mp4','videos/V-P2-8.mp4',
+  'videos/V-P2-9-1.mp4','videos/V-P2-9-2.mp4',
+  'videos/V-P2-10-1.mp4','videos/V-P2-10-2.mp4','videos/V-P2-10-3.mp4',
+  // Panel 3 — Modelado
+  'videos/V-P3-5.mp4',
+  // Panel 4 — General
+  'videos/V-P4-2.mp4','videos/V-P4-4.mp4',
+  // Destacados
+  'videos/V-D1.mp4','videos/V-D2.mp4','videos/V-D3.mp4',
+  'videos/V-D4.mp4','videos/V-D5.mp4',
 ];
 function hasVideo(path){ return AVAILABLE_VIDEOS.indexOf(path) !== -1; }
 
@@ -1106,11 +1115,26 @@ const PANELS = [
 ];
 
 const DEMOS = [
+  // Panel 1 — Aceros
   ['Aceros','Acero C. Corridos','Crea acero de forma automática en cimientos corridos.','videos/V-P1-1.mp4'],
   ['Aceros','Acero Columnas','Crea acero longitudinal de manera automática en las columnas del modelo.','videos/V-P1-2.mp4'],
   ['Aceros','Acero Muros','Crea refuerzos en los muros del modelo.','videos/V-P1-3.mp4'],
   ['Aceros','Acero Vigas','Crea acero longitudinal de manera automática en vigas.','videos/V-P1-4.mp4'],
   ['Aceros','Acero V. Continuas','Crea acero longitudinal en vigas continuas considerando todas las columnas que las atraviesan.','videos/V-P1-5.mp4'],
+  // Panel 2 — Documentación
+  ['Documentación','Acotar Columnas','Genera automáticamente el acotado de columnas en las vistas del modelo.','videos/V-P2-1.mp4'],
+  ['Documentación','Acotar Ejes','Acota los ejes estructurales del modelo de forma automática.','videos/V-P2-2.mp4'],
+  ['Documentación','Acotar Cimientos','Genera el acotado de cimientos en las vistas de planta.','videos/V-P2-3.mp4'],
+  ['Documentación','Generar Planos','Crea planos de documentación a partir de las vistas del modelo.','videos/V-P2-4.mp4'],
+  ['Documentación','Asignar Marca','Asigna marcas a los elementos estructurales del modelo automáticamente.','videos/V-P2-5.mp4'],
+  ['Documentación','Renombrar Planos','Renombra los planos del proyecto siguiendo una nomenclatura definida.','videos/V-P2-6.mp4'],
+  ['Documentación','Sección Zapatas','Genera secciones transversales de zapatas en el modelo.','videos/V-P2-7.mp4'],
+  ['Documentación','Acotado por Puntos','Acota elementos estructurales tomando puntos de referencia del modelo.','videos/V-P2-8.mp4'],
+  ['Documentación','Alzado Columnas','Genera alzados de columnas con su detallamiento automáticamente.','videos/V-P2-9-1.mp4'],
+  ['Documentación','Secciones Columnas','Crea secciones transversales de columnas con refuerzo incluido.','videos/V-P2-9-2.mp4'],
+  ['Documentación','Secc. Long. Vigas','Genera la sección longitudinal de vigas con su acero de refuerzo.','videos/V-P2-10-1.mp4'],
+  ['Documentación','Secc. Trans. Vigas','Crea secciones transversales de vigas en las posiciones definidas.','videos/V-P2-10-2.mp4'],
+  ['Documentación','Secc. Elem. Estructurales','Genera secciones de los elementos estructurales seleccionados.','videos/V-P2-10-3.mp4'],
 ];
 
 const FAQ = [
