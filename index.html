@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ADOS — Plugin para Revit</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg stroke-linejoin='round' stroke-width='3'%3E%3Cpath d='M50 8 L86 28.5 L50 49 L14 28.5 Z' fill='%23F9B233' stroke='%23F9B233'/%3E%3Cpath d='M86 28.5 L86 71 L50 92 L50 49 Z' fill='%23E7A11E' stroke='%23E7A11E'/%3E%3Cpath d='M14 28.5 L50 49 L50 92 L14 71 Z' fill='%233A4654' stroke='%233A4654'/%3E%3C/g%3E%3C/svg%3E">
 <meta name="description" content="ADOS: plugin nativo para Revit 2024, 2025 y 2026 con 32 herramientas que automatizan acero de refuerzo, modelado y documentación. Suscripción desde $15.000/mes.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -476,6 +477,40 @@ section.light .tag-ghost{border-color:var(--border-light); color:var(--text-on-l
 .faq-a-inner{padding:0 0 var(--s5); color:var(--text-muted); font-size:0.96rem; line-height:1.65; max-width:68ch;}
 @media (prefers-reduced-motion:reduce){.faq-a{transition:none;}}
 
+/* ---------- Destacados ---------- */
+#destacados{position:relative;}
+#destacados::before{
+  content:""; position:absolute; inset:0; pointer-events:none; z-index:0;
+  background:radial-gradient(ellipse 55% 70% at 85% 50%, rgba(26,33,41,0.90) 0%, transparent 70%);
+}
+#destacados .container{position:relative; z-index:1;}
+#destacados .section-head{text-align:center; margin:0 auto; max-width:680px;}
+.dest-tabs{display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin:var(--s5) 0 var(--s5);}
+.dest-tab{
+  padding:10px 24px; border-radius:var(--r-pill); font-size:0.88rem; font-weight:500;
+  border:1px solid var(--border-strong); color:var(--text-muted);
+  background:transparent; cursor:pointer;
+  transition:background var(--dur-base) var(--ease-std), border-color var(--dur-base) var(--ease-std), color var(--dur-base) var(--ease-std);
+}
+.dest-tab:hover{border-color:var(--accent); color:var(--text);}
+.dest-tab.active{background:var(--accent); border-color:var(--accent); color:var(--on-accent); font-weight:600;}
+.dest-panels{position:relative;}
+.dest-panel{display:none;}
+.dest-panel.active{display:block;}
+.dest-screen{
+  width:100%; border-radius:var(--r-ui); overflow:hidden;
+  border:1px solid var(--border);
+  background:linear-gradient(135deg, #161c24 0%, #0C0F12 100%);
+  aspect-ratio:16/9; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 32px 80px rgba(0,0,0,0.6);
+}
+.dest-screen-ph{
+  display:flex; flex-direction:column; align-items:center; gap:var(--s3);
+  color:var(--text-faint);
+}
+.dest-screen-ph svg{width:48px; height:48px; color:var(--border-strong);}
+.dest-screen-ph span{font-size:0.85rem; letter-spacing:0.08em; text-transform:uppercase;}
+
 /* ---------- Autor / Creador ---------- */
 #autor{position:relative;}
 #autor::before{
@@ -759,6 +794,36 @@ footer{background:var(--bg-deep); border-top:1px solid var(--border); padding:va
   </div>
 </section>
 
+<!-- ============ DESTACADOS ============ -->
+<section class="deep" id="destacados">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">Lo mejor de ADOS</p>
+      <h2>Destacados en acción</h2>
+    </div>
+    <div class="dest-tabs">
+      <button class="dest-tab active" data-tab="0">Destacado 1</button>
+      <button class="dest-tab" data-tab="1">Destacado 2</button>
+      <button class="dest-tab" data-tab="2">Destacado 3</button>
+      <button class="dest-tab" data-tab="3">Destacado 4</button>
+    </div>
+    <div class="dest-panels">
+      <div class="dest-panel active" data-panel="0">
+        <div class="dest-screen"><video src="videos/V-D1.mp4" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video></div>
+      </div>
+      <div class="dest-panel" data-panel="1">
+        <div class="dest-screen"><video src="videos/V-D2.mp4" muted loop playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;display:block;"></video></div>
+      </div>
+      <div class="dest-panel" data-panel="2">
+        <div class="dest-screen"><video src="videos/V-D3.mp4" muted loop playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;display:block;"></video></div>
+      </div>
+      <div class="dest-panel" data-panel="3">
+        <div class="dest-screen"><video src="videos/V-D4.mp4" muted loop playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;display:block;"></video></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ============ HERRAMIENTAS ============ -->
 <section class="deep" id="herramientas">
   <div class="container">
@@ -801,7 +866,7 @@ footer{background:var(--bg-deep); border-top:1px solid var(--border); padding:va
         <div class="plan-kicker">Flexibilidad máxima</div>
         <div class="plan-price"><span class="amt">$25.000</span><span class="cur">COP</span></div>
         <p class="plan-bill">Facturado mensualmente</p>
-        <a href="#" class="btn btn-ghost plan-cta">Suscribirse</a>
+        <a href="https://mpago.la/14jBsQG" target="_blank" rel="noopener" class="btn btn-ghost plan-cta">Suscribirse</a>
         <ul class="plan-feats">
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Acceso a las 32 herramientas</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Revit 2024, 2025 y 2026</li>
@@ -815,7 +880,7 @@ footer{background:var(--bg-deep); border-top:1px solid var(--border); padding:va
         <div class="plan-price"><span class="amt">$120.000</span><span class="cur">COP</span></div>
         <p class="plan-bill"><strong>$20.000/mes</strong> · Facturado cada 6 meses</p>
         <span class="plan-save">Ahorras 20% vs mensual</span>
-        <a href="#" class="btn btn-ghost plan-cta">Suscribirse</a>
+        <a href="https://mpago.la/1tcUh8Z" target="_blank" rel="noopener" class="btn btn-ghost plan-cta">Suscribirse</a>
         <ul class="plan-feats">
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Acceso a las 32 herramientas</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Revit 2024, 2025 y 2026</li>
@@ -830,7 +895,7 @@ footer{background:var(--bg-deep); border-top:1px solid var(--border); padding:va
         <div class="plan-price"><span class="amt">$180.000</span><span class="cur">COP</span></div>
         <p class="plan-bill"><strong>$15.000/mes</strong> · Facturado anualmente</p>
         <span class="plan-save">Ahorras $120.000</span>
-        <a href="#" class="btn btn-primary plan-cta">Suscribirse <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a href="https://mpago.la/1GadrRA" target="_blank" rel="noopener" class="btn btn-primary plan-cta">Suscribirse <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         <ul class="plan-feats">
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Acceso a las 32 herramientas</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Revit 2024, 2025 y 2026</li>
@@ -885,7 +950,7 @@ footer{background:var(--bg-deep); border-top:1px solid var(--border); padding:va
     <h2>Automatice su flujo en Revit <span class="amber">desde COP $25.000 al mes.</span></h2>
     <p>Acceso completo a las 32 herramientas en Revit 2024, 2025 y 2026. Elija el plan que se ajuste a su ritmo y cancele cuando quiera.</p>
     <div class="hero-cta">
-      <a href="#precio" class="btn btn-primary btn-neon">SUSCRÍBETE <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a href="https://mpago.la/14jBsQG" target="_blank" rel="noopener" class="btn btn-primary btn-neon">SUSCRÍBETE <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     </div>
     <div class="final-strip">
       <span class="it"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Cancela cuando quieras</span>
@@ -958,6 +1023,10 @@ const AVAILABLE_VIDEOS = [
   'videos/V-P1-3.mp4',
   'videos/V-P1-4.mp4',
   'videos/V-P1-5.mp4',
+  'videos/V-D1.mp4',
+  'videos/V-D2.mp4',
+  'videos/V-D3.mp4',
+  'videos/V-D4.mp4',
 ];
 function hasVideo(path){ return AVAILABLE_VIDEOS.indexOf(path) !== -1; }
 
@@ -1221,6 +1290,20 @@ function iconSvg(key){
   }));
 
   applyCovers();
+})();
+
+(function initDestacados(){
+  document.querySelectorAll('.dest-tab').forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      const idx = tab.dataset.tab;
+      document.querySelectorAll('.dest-tab').forEach(t=>t.classList.remove('active'));
+      document.querySelectorAll('.dest-panel').forEach(p=>{ p.classList.remove('active'); const v=p.querySelector('video'); if(v) v.pause(); });
+      tab.classList.add('active');
+      const panel = document.querySelector('.dest-panel[data-panel="'+idx+'"]');
+      panel.classList.add('active');
+      const v = panel.querySelector('video'); if(v){ const p=v.play(); if(p&&p.catch) p.catch(()=>{}); }
+    });
+  });
 })();
 
 (function renderFaq(){
