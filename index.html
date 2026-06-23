@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ADOS — Plugin para Revit</title>
+<meta name="description" content="ADOS: plugin nativo para Revit 2024, 2025 y 2026 con 32 herramientas que automatizan acero de refuerzo, modelado y documentación. Suscripción desde $15.000/mes.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   ADOS — Design tokens (inlined from ADOS Design System)
+   60% navy · 30% light · 10% amber · rare teal
+   ============================================================ */
+:root{
+  /* Navy scale */
+  --ados-navy-950:#1A2129; --ados-navy-900:#222B35; --ados-navy-800:#2A3441;
+  --ados-navy-700:#3A4654; --ados-navy-600:#4A5768;
+  /* Amber */
+  --ados-amber-300:#FBC766; --ados-amber:#F9B233; --ados-amber-600:#E7A11E;
+  /* Light & neutral */
+  --ados-white:#FFFFFF; --ados-light:#F5F5F3; --ados-light-200:#ECECE8;
+  --ados-ink:#222B35; --ados-ink-soft:#4A5568;
+  /* Steel (rare technical accent) */
+  --ados-steel:#2F8A8A;
+
+  /* Semantic */
+  --bg:var(--ados-navy-900); --bg-deep:#0C0F12; --surface:var(--ados-navy-800);
+  --border:rgba(255,255,255,0.10); --border-strong:rgba(255,255,255,0.18);
+  --border-light:rgba(34,43,53,0.12); --border-light-strong:rgba(34,43,53,0.20);
+  --text:var(--ados-white); --text-muted:rgba(255,255,255,0.60); --text-faint:rgba(255,255,255,0.40);
+  --text-on-light:var(--ados-ink); --text-on-light-muted:var(--ados-ink-soft);
+  --accent:var(--ados-amber); --accent-hover:var(--ados-amber-300); --accent-press:var(--ados-amber-600);
+  --on-accent:var(--ados-navy-900);
+
+  /* Type */
+  --font-display:'Space Grotesk','Segoe UI',system-ui,sans-serif;
+  --font-body:'Inter',system-ui,-apple-system,sans-serif;
+  --tracking-display:-0.03em; --tracking-tight:-0.015em; --tracking-caps-wide:0.1em;
+
+  /* Spacing 8pt */
+  --s1:4px; --s2:8px; --s3:16px; --s4:24px; --s5:32px; --s6:48px; --s7:64px; --s8:96px; --s9:128px;
+  /* Radius */
+  --r-ui:6px; --r-sm:4px; --r-img:0px; --r-pill:999px;
+  /* Layout */
+  --container:1280px; --gutter:24px;
+  /* Motion */
+  --ease-std:cubic-bezier(0.2,0,0,1); --ease-out:cubic-bezier(0.16,1,0.3,1);
+  --dur-fast:120ms; --dur-base:200ms; --dur-slow:320ms;
+}
+
+*{box-sizing:border-box; margin:0; padding:0;}
+html{scroll-behavior:smooth;}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}}
+body{
+  font-family:var(--font-body);
+  background:var(--bg);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  line-height:1.5;
+}
+img{display:block; max-width:100%;}
+a{color:inherit; text-decoration:none;}
+button{font-family:inherit; cursor:pointer; border:none; background:none;}
+
+/* Focus — amber on dark, navy on light */
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:var(--r-sm);}
+.on-light :focus-visible,
+section.light :focus-visible{outline-color:var(--ados-navy-900);}
+
+.container{max-width:var(--container); margin:0 auto; padding:0 var(--gutter);}
+.eyebrow{
+  font-family:var(--font-body); font-weight:500; font-size:0.7rem;
+  letter-spacing:var(--tracking-caps-wide); text-transform:uppercase;
+  color:var(--accent);
+}
+.section-label{color:var(--text-faint);}
+section.light .section-label{color:var(--text-on-light-muted);}
+
+/* Display headings */
+h1,h2,h3{font-family:var(--font-display); font-weight:700; letter-spacing:var(--tracking-display); line-height:1.05;}
+.lead{font-size:1.125rem; line-height:1.65; color:var(--text-muted); max-width:62ch;}
+section.light .lead{color:var(--text-on-light-muted);}
+
+/* ---------- Buttons ---------- */
+.btn{
+  display:inline-flex; align-items:center; gap:var(--s2);
+  font-family:var(--font-body); font-weight:600; font-size:0.95rem;
+  padding:14px 22px; border-radius:var(--r-ui);
+  transition:background var(--dur-base) var(--ease-std), border-color var(--dur-base) var(--ease-std), transform var(--dur-fast) var(--ease-std);
+  white-space:nowrap;
+}
+.btn-primary{background:var(--accent); color:var(--on-accent);}
+.btn-primary:hover{background:var(--accent-hover);}
+.btn-primary:active{background:var(--accent-press); transform:translateY(1px);}
+.btn-neon{transition:box-shadow 250ms var(--ease-out), background 200ms;}
+.btn-neon:hover{
+  background:var(--accent) !important;
+  box-shadow:0 0 12px 2px rgba(249,178,51,0.55), 0 0 32px 6px rgba(249,178,51,0.30), 0 0 64px 12px rgba(249,178,51,0.12);
+}
+.btn-ghost{border:1px solid var(--border-strong); color:var(--text);}
+.btn-ghost:hover{background:rgba(255,255,255,0.06);}
+.btn-ghost:active{transform:translateY(1px);}
+section.light .btn-ghost{border-color:var(--border-light-strong); color:var(--text-on-light);}
+section.light .btn-ghost:hover{background:rgba(34,43,53,0.05);}
+.btn-sm{padding:9px 16px; font-size:0.85rem;}
+.btn .arrow{transition:transform var(--dur-base) var(--ease-out);}
+.btn:hover .arrow{transform:translateX(3px);}
+
+/* ---------- Top bar ---------- */
+.topbar{
+  position:fixed; top:0; left:0; right:0; z-index:100;
+  background:rgba(26,33,41,0.82);
+  -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+}
+.topbar-inner{
+  display:flex; align-items:center; gap:var(--s5);
+  min-height:56px; padding:8px var(--gutter);
+  max-width:var(--container); margin:0 auto;
+}
+.brand{display:flex; align-items:center; gap:9px; flex:none;}
+.brand-name{font-family:var(--font-display); font-weight:700; font-size:1.15rem; letter-spacing:var(--tracking-tight); color:var(--text);}
+.brand-sub{
+  font-size:0.62rem; letter-spacing:var(--tracking-caps-wide); text-transform:uppercase;
+  color:var(--text-muted); padding-left:9px; margin-left:2px; border-left:1px solid var(--border-strong);
+}
+.topnav{display:flex; align-items:center; gap:var(--s5); margin-left:auto;}
+.topnav a{font-size:0.86rem; color:var(--text-muted); transition:color var(--dur-base) var(--ease-std);}
+.topnav a:hover{color:var(--text);}
+@media (max-width:760px){
+  .topbar-inner{gap:var(--s3);}
+  .brand-sub{display:none;}
+  .topnav{display:none;}
+}
+
+/* spacing for fixed bar */
+main{padding-top:56px;}
+
+/* ---------- Generic section ---------- */
+section{padding:var(--s9) 0;}
+@media (max-width:760px){section{padding:var(--s8) 0;}}
+section.light{background:var(--ados-light); color:var(--text-on-light);}
+section.light h1, section.light h2, section.light h3{color:var(--text-on-light);}
+section.deep{background:var(--bg-deep);}
+.section-head{max-width:760px; margin-bottom:var(--s7);}
+.section-head h2{font-size:clamp(2rem,4.6vw,3rem);}
+.section-head .lead{margin-top:var(--s4);}
+
+/* ---------- Hero ---------- */
+.hero{position:relative; padding-top:calc(var(--s8) + var(--s6) + 45px); padding-bottom:calc(var(--s8) + var(--s6) + 45px); overflow:hidden; background:#0C0F12;}
+.hero-bg-video{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0; opacity:0.25;}
+.hero-bg-overlay{
+  position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:radial-gradient(ellipse 95% 120% at 50% 25%, rgba(12,15,18,0.35) 0%, rgba(12,15,18,0.94) 62%, rgba(12,15,18,1.00) 100%);
+}
+.hero::after{
+  content:""; position:absolute; inset:0; pointer-events:none; z-index:2;
+  background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);
+  background-size:64px 64px; opacity:.15;
+  -webkit-mask-image:radial-gradient(ellipse 100% 100% at 50% 0%,#000 0%,transparent 80%);
+  mask-image:radial-gradient(ellipse 100% 100% at 50% 0%,#000 0%,transparent 80%);
+}
+.hero .container{position:relative; z-index:3;}
+.hero-grid{display:flex; flex-direction:column; align-items:center; text-align:center;}
+.hero-eyebrow{display:inline-flex; align-items:center; justify-content:center; gap:10px; margin-bottom:var(--s4);}
+.tag{
+  display:inline-flex; align-items:center; gap:7px;
+  font-size:0.7rem; font-weight:500; letter-spacing:var(--tracking-caps-wide); text-transform:uppercase;
+  padding:5px 12px; border-radius:var(--r-pill);
+}
+.tag-amber{background:rgba(249,178,51,0.12); color:var(--accent); border:1px solid rgba(249,178,51,0.3);}
+.tag-steel{background:rgba(47,138,138,0.14); color:#5cb8b8; border:1px solid rgba(47,138,138,0.35);}
+section.light .tag-steel{color:var(--ados-steel); border-color:rgba(47,138,138,0.4); background:rgba(47,138,138,0.08);}
+.tag-ghost{border:1px solid var(--border); color:var(--text-muted);}
+section.light .tag-ghost{border-color:var(--border-light); color:var(--text-on-light-muted);}
+
+.hero h1{font-size:clamp(2.6rem,6vw,4.25rem); margin-bottom:var(--s4);}
+.hero h1 .amber{color:var(--accent);}
+.hero-sub{font-size:1.15rem; line-height:1.6; color:var(--text); max-width:54ch; margin-bottom:var(--s6); margin-left:auto; margin-right:auto;}
+.hero-cta{display:flex; flex-wrap:wrap; gap:var(--s3); align-items:center; justify-content:center;}
+.hero-cta .note{font-size:0.8rem; color:var(--text-faint);}
+.hero-metrics{
+  display:flex; gap:var(--s6); margin-top:var(--s7); padding-top:var(--s5);
+  border-top:1px solid var(--accent); flex-wrap:wrap; justify-content:center;
+}
+.metric .n{font-family:var(--font-display); font-weight:700; font-size:2rem; letter-spacing:var(--tracking-tight); color:var(--text);}
+.metric .l{font-size:0.78rem; color:var(--text-muted); margin-top:4px; letter-spacing:0.02em;}
+
+/* Hero visual — framed render placeholder */
+.hero-visual{position:relative;}
+.frame{
+  position:relative; border:1px solid var(--border-strong); border-radius:0;
+  background:
+    linear-gradient(135deg,rgba(58,70,84,0.55),rgba(26,33,41,0.85));
+  aspect-ratio:4/5; overflow:hidden;
+}
+.frame .corner-label{
+  position:absolute; left:14px; bottom:12px; right:14px;
+  display:flex; justify-content:space-between; align-items:flex-end;
+  font-size:0.62rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-faint);
+}
+.placeholder-note{
+  position:absolute; top:14px; left:14px;
+  font-size:0.62rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-faint);
+  border:1px solid var(--border); padding:4px 9px;
+}
+.iso-cube{position:absolute; top:50%; left:50%; transform:translate(-50%,-54%); width:46%; opacity:.92;}
+.iso-bars{position:absolute; left:0; right:0; bottom:0; height:42%;
+  background-image:repeating-linear-gradient(90deg,transparent 0 22px,rgba(249,178,51,0.18) 22px 24px);
+  -webkit-mask-image:linear-gradient(transparent,#000); mask-image:linear-gradient(transparent,#000);}
+
+@media (max-width:920px){
+  .hero-grid{grid-template-columns:1fr; gap:var(--s7);}
+  .hero-visual{max-width:420px;}
+}
+
+/* ---------- Problema ---------- */
+#problema{position:relative;}
+#problema::before{
+  content:""; position:absolute; inset:0; pointer-events:none; z-index:0;
+  background:radial-gradient(ellipse 55% 70% at 15% 50%, rgba(26,33,41,0.90) 0%, transparent 70%);
+}
+#problema .container{position:relative; z-index:1;}
+#herramientas{position:relative;}
+#herramientas::before{
+  content:""; position:absolute; inset:0; pointer-events:none; z-index:0;
+  background:radial-gradient(ellipse 55% 70% at 85% 50%, rgba(26,33,41,0.90) 0%, transparent 70%);
+}
+#herramientas .container{position:relative; z-index:1;}
+#demo{position:relative;}
+#demo::before{
+  content:""; position:absolute; inset:0; pointer-events:none; z-index:0;
+  background:radial-gradient(ellipse 55% 70% at 15% 50%, rgba(26,33,41,0.90) 0%, transparent 70%);
+}
+#demo .container{position:relative; z-index:1;}
+.pain-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:var(--gutter);}
+.pain{padding:var(--s5); border:1px solid var(--border); border-radius:var(--r-ui); background:linear-gradient(to top, #0C0F12 0%, #161c24 100%); transition:border-color var(--dur-base) var(--ease-std), box-shadow var(--dur-base) var(--ease-std), transform 250ms var(--ease-out);}
+.pain:hover, .pain.reveal.in:hover{border-color:var(--accent); box-shadow:0 0 0 1px var(--accent), 0 0 18px 2px rgba(249,178,51,0.20); background:linear-gradient(to top, #0C0F12 0%, #1e2a38 100%); transform:translateY(-10px);}
+.pain-header{display:flex; align-items:center; gap:var(--s3); margin:var(--s4) 0 var(--s2);}
+.pain .idx{font-family:var(--font-display); font-weight:500; font-size:0.8rem; color:var(--accent); letter-spacing:0.1em;}
+.pain h3{font-size:1.3rem; letter-spacing:var(--tracking-tight); color:var(--accent); margin:0;}
+.pain p{color:var(--text-muted); font-size:0.95rem; line-height:1.6;}
+.pain .ic{width:34px; height:34px; color:var(--accent); margin-bottom:var(--s4);}
+.pain-video-wrap{width:100%; border-radius:var(--r-ui); overflow:hidden; margin-bottom:var(--s4); aspect-ratio:16/9; background:#0C0F12;}
+.pain-video{width:100%; height:100%; object-fit:cover; display:block;}
+@media (max-width:760px){.pain-grid{grid-template-columns:1fr;}}
+
+.problem-foot{
+  margin-top:var(--s7); padding:var(--s5) var(--s6);
+  border:1px solid rgba(249,178,51,0.3); border-left:3px solid var(--accent);
+  background:rgba(249,178,51,0.06); border-radius:var(--r-ui);
+  display:flex; align-items:center; gap:var(--s4); flex-wrap:wrap;
+}
+.problem-foot p{font-family:var(--font-display); font-weight:500; font-size:1.35rem; letter-spacing:var(--tracking-tight); line-height:1.25;}
+.problem-foot .amber{color:var(--accent);}
+
+/* ---------- Herramientas ---------- */
+.panel{
+  margin-bottom:var(--s5); padding:var(--s5);
+  background:linear-gradient(to top, #0C0F12 0%, #161c24 100%);
+  border:1px solid var(--border); border-radius:var(--r-ui);
+}
+.panel:last-child{margin-bottom:0;}
+.panel-head{
+  display:flex; align-items:center; gap:var(--s3);
+  padding-bottom:var(--s3); margin-bottom:var(--s4);
+  border-bottom:1px solid var(--ados-steel);
+}
+.panel-head h3{font-size:1.3rem; letter-spacing:var(--tracking-tight); color:var(--accent);}
+.panel-head .count{
+  font-family:var(--font-display); font-weight:500; font-size:0.8rem; color:var(--text-faint);
+  letter-spacing:0.08em; text-transform:uppercase;
+}
+.panel-head .chip{margin-left:auto;}
+.panel-head .chip .tag{background:rgba(47,138,138,0.12); color:var(--ados-steel); border-color:rgba(47,138,138,0.35);}
+.panel-note{
+  display:flex; align-items:flex-start; gap:12px;
+  margin-bottom:var(--s4); padding:14px 16px;
+  background:rgba(249,178,51,0.08); border:1px solid rgba(249,178,51,0.28); border-left:3px solid var(--accent);
+  border-radius:var(--r-ui);
+}
+.panel-note svg{width:20px; height:20px; flex:none; color:var(--accent); margin-top:1px;}
+.panel-note p{font-size:0.9rem; line-height:1.55; color:var(--text-muted);}
+
+/* ---------- Panel Tabs ---------- */
+#panel-tabs-bar{
+  display:flex; gap:0; overflow-x:auto; scrollbar-width:none;
+  border-bottom:1px solid var(--border);
+}
+#panel-tabs-bar::-webkit-scrollbar{display:none;}
+.ptab{
+  flex:1; display:flex; align-items:center; justify-content:center; gap:8px;
+  padding:12px 16px; font-family:var(--font-body); font-weight:500; font-size:0.88rem;
+  color:rgba(255,255,255,0.55) !important; cursor:pointer; white-space:nowrap;
+  background:transparent !important; border:none !important; border-bottom:2px solid transparent !important;
+  transition:color var(--dur-base) var(--ease-std), border-color var(--dur-base) var(--ease-std);
+}
+.ptab:hover{color:rgba(255,255,255,0.9) !important;}
+.ptab.active{color:var(--accent) !important; border-bottom-color:var(--accent) !important;}
+.ptab-count{font-size:0.72rem; opacity:0.6; font-weight:400;}
+#panel-tabs-content{margin-top:var(--s4);}
+.ptab-panel{display:none;}
+.ptab-panel.active{display:block;}
+.ptab-card{
+  background:linear-gradient(to top, #0C0F12 0%, #1a2230 100%);
+  border:1px solid var(--border); border-radius:var(--r-ui);
+  padding:var(--s6);
+}
+.ptab-card-title{font-family:var(--font-display); font-weight:700; font-size:1.4rem; color:var(--text); margin-bottom:var(--s5);}
+.ptool-list{display:flex; flex-direction:column; gap:2px;}
+.ptool{
+  display:flex; align-items:center; gap:var(--s4); padding:12px var(--s3);
+  border-radius:var(--r-ui);
+  transition:background var(--dur-base) var(--ease-std);
+}
+.ptool:hover{background:rgba(255,255,255,0.05);}
+.ptool-ic{width:40px; height:40px; flex:none; background:#ffffff; border:1px solid var(--border-light); border-radius:var(--r-sm); display:flex; align-items:center; justify-content:center; overflow:hidden;}
+.ptool-ic img{width:100%; height:100%; object-fit:contain;}
+.ptool-ic svg{width:20px; height:20px; color:var(--text-faint);}
+.ptool-body{flex:1; min-width:0;}
+.ptool-name{font-family:var(--font-display); font-weight:600; font-size:0.9rem; color:var(--text); line-height:1.2;}
+.ptool-desc{font-size:0.78rem; color:var(--text-muted); margin-top:2px; line-height:1.4;}
+.ptool-divider{height:1px; background:var(--border); margin:var(--s2) 0;}
+@keyframes marquee-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes marquee-scroll-rev{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+.tools-marquee{overflow:hidden; position:relative; padding:6px 0;}
+.tools-marquee::before,.tools-marquee::after{
+  content:""; position:absolute; top:0; bottom:0; width:80px; z-index:2; pointer-events:none;
+}
+.tools-marquee::before{left:0; background:linear-gradient(to right,#0C0F12,transparent);}
+.tools-marquee::after{right:0; background:linear-gradient(to left,#0C0F12,transparent);}
+.tools-grid{
+  display:flex; flex-wrap:nowrap; gap:var(--s3); width:max-content;
+  animation:marquee-scroll 30s linear infinite;
+}
+.tools-grid:hover{animation-play-state:paused;}
+
+.tool{
+  display:flex; flex-direction:column; gap:var(--s3); padding:var(--s4);
+  flex:0 0 200px; min-width:200px;
+  background:#ffffff; border:1px solid rgba(255,255,255,0.15); border-radius:var(--r-ui);
+  transition:border-color var(--dur-base) var(--ease-std), transform var(--dur-base) var(--ease-std);
+}
+.tool:hover{border-color:var(--accent); transform:translateY(-2px);}
+.tool-ic{
+  width:56px; height:56px; flex:none; border-radius:var(--r-sm);
+  border:1px solid var(--border-light); background:var(--ados-light);
+  display:flex; align-items:center; justify-content:center;
+}
+.tool-ic img{width:100%; height:100%; object-fit:contain; display:block;}
+.tool-ic svg{width:26px; height:26px; color:var(--text-faint);}
+.tool:hover .tool-ic svg{color:var(--accent);}
+.tool-body h4{font-family:var(--font-display); font-weight:600; font-size:0.9rem; letter-spacing:var(--tracking-tight); line-height:1.2; color:var(--ados-ink);}
+.tool-body p{font-size:0.78rem; line-height:1.5; color:var(--ados-ink-soft); margin-top:4px;}
+
+/* ---------- Demo gallery ---------- */
+.demo-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:var(--gutter);}
+@media (max-width:900px){.demo-grid{grid-template-columns:repeat(2,1fr);}}
+@media (max-width:560px){.demo-grid{grid-template-columns:1fr;}}
+.demo{
+  border:1px solid var(--border-light); background:var(--ados-white); border-radius:var(--r-ui); overflow:hidden;
+  transition:border-color var(--dur-base) var(--ease-std);
+}
+.demo:hover{border-color:var(--accent);}
+.demo .thumb{
+  position:relative; aspect-ratio:16/10; border-radius:0;
+  background:linear-gradient(135deg,#2A3441,#1A2129);
+  border-bottom:1px solid var(--border-light);
+  display:flex; align-items:center; justify-content:center;
+  overflow:hidden;
+}
+.demo .thumb .grid-bg{position:absolute; inset:0;
+  background-image:linear-gradient(rgba(255,255,255,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.06) 1px,transparent 1px);
+  background-size:28px 28px;}
+.demo .ph-tag{position:absolute; top:10px; left:10px; font-family:var(--font-display); font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-faint); border:1px solid var(--border); padding:3px 8px;}
+.play{
+  position:relative; z-index:1; width:52px; height:52px; border-radius:999px;
+  background:var(--accent); color:var(--on-accent);
+  display:flex; align-items:center; justify-content:center;
+  transition:background var(--dur-base) var(--ease-std), transform var(--dur-base) var(--ease-out);
+}
+.demo:hover .play{background:var(--accent-hover); transform:scale(1.05);}
+@media (prefers-reduced-motion:reduce){.demo:hover .play{transform:none;}}
+.demo .meta{padding:var(--s3) var(--s4) var(--s4);}
+.demo .meta .k{font-size:0.66rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--ados-steel); font-weight:600;}
+.demo .meta h4{font-family:var(--font-display); font-weight:600; font-size:1.02rem; margin-top:6px; letter-spacing:var(--tracking-tight); color:var(--text-on-light);}
+.demo .meta p{font-size:0.82rem; color:var(--text-on-light-muted); margin-top:5px; line-height:1.5;}
+
+/* ---------- Pricing (3 planes de suscripción) ---------- */
+#precio{position:relative; background:#0C0F12;}
+#precio::before{
+  content:""; position:absolute; inset:0; pointer-events:none; z-index:0;
+  background:radial-gradient(ellipse 55% 70% at 85% 50%, rgba(26,33,41,0.90) 0%, transparent 70%);
+}
+#precio .container{position:relative; z-index:1;}
+.plans{display:grid; grid-template-columns:repeat(3,1fr); gap:var(--gutter); align-items:stretch;}
+@media (max-width:920px){.plans{grid-template-columns:1fr; max-width:460px; margin:0 auto;}}
+.plan{
+  position:relative; display:flex; flex-direction:column;
+  background:linear-gradient(to top, #0C0F12 0%, #161c24 100%);
+  border:1px solid var(--border); border-radius:var(--r-ui);
+  padding:var(--s6);
+  transition:border-color var(--dur-base) var(--ease-std), box-shadow var(--dur-base) var(--ease-std), transform 250ms var(--ease-out), background var(--dur-base) var(--ease-std);
+}
+.plan:hover{
+  border-color:var(--accent);
+  box-shadow:0 0 0 1px var(--accent), 0 0 18px 2px rgba(249,178,51,0.20);
+  background:linear-gradient(to top, #0C0F12 0%, #1e2a38 100%);
+  transform:translateY(-10px);
+}
+.plan-featured{
+  border-color:var(--accent);
+  box-shadow:0 0 0 1px var(--accent), 0 0 32px 6px rgba(249,178,51,0.18);
+  background:linear-gradient(to top, #0C0F12 0%, #1b2540 100%);
+  padding:var(--s6);
+  z-index:2; margin:-24px 0;
+}
+.plan-featured:hover{
+  box-shadow:0 0 0 1px var(--accent), 0 0 44px 8px rgba(249,178,51,0.30);
+  background:linear-gradient(to top, #0C0F12 0%, #1e2a38 100%);
+  transform:translateY(-10px);
+}
+.plan-featured .plan-price .amt{font-size:clamp(2.8rem,5.5vw,3.6rem);}
+.plan-featured .plan-name{font-size:1.55rem;}
+.plan-badge{
+  position:absolute; top:-13px; left:var(--s6);
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:0.62rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase;
+  background:var(--accent); color:var(--on-accent); padding:5px 14px; border-radius:var(--r-pill);
+  box-shadow:0 0 16px rgba(249,178,51,0.45);
+}
+.plan-name{font-family:var(--font-display); font-weight:600; font-size:1.3rem; letter-spacing:var(--tracking-tight); color:var(--text);}
+.plan-kicker{font-size:0.66rem; font-weight:500; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-top:6px;}
+.plan-featured .plan-kicker{color:var(--accent);}
+.plan-price{display:flex; align-items:flex-end; gap:8px; margin-top:var(--s5);}
+.plan-price .amt{font-family:var(--font-display); font-weight:700; font-size:clamp(2.2rem,5vw,2.8rem); letter-spacing:var(--tracking-display); line-height:1; color:var(--text);}
+.plan-price .cur{font-size:0.8rem; font-weight:500; color:var(--text-muted); margin-bottom:7px;}
+.plan-bill{font-size:0.8rem; color:var(--text-muted); margin-top:10px; min-height:1.2em;}
+.plan-bill strong{color:var(--text); font-weight:600;}
+.plan-save{
+  display:inline-flex; align-items:center; gap:6px; margin-top:var(--s3);
+  font-size:0.72rem; font-weight:600; letter-spacing:0.04em;
+  color:var(--accent); background:rgba(249,178,51,0.12); border:1px solid rgba(249,178,51,0.3);
+  padding:5px 10px; border-radius:var(--r-pill); align-self:flex-start;
+}
+.plan-cta{width:100%; justify-content:center; margin-top:var(--s5);}
+.plan-feats{list-style:none; margin-top:var(--s5); padding-top:var(--s4); border-top:1px solid var(--border); display:flex; flex-direction:column; gap:12px;}
+.plan-feats li{display:flex; align-items:flex-start; gap:10px; font-size:0.86rem; color:var(--text-muted); line-height:1.45;}
+.plan-feats svg{width:17px; height:17px; flex:none; color:var(--accent); margin-top:1px;}
+.pricing-foot{
+  margin-top:var(--s6); padding-top:var(--s5); border-top:1px solid var(--border);
+  text-align:center; font-size:0.9rem; color:var(--text-muted); max-width:680px; margin-left:auto; margin-right:auto;
+}
+
+/* ---------- FAQ ---------- */
+#faq{position:relative;}
+#faq::before{
+  content:""; position:absolute; inset:0; pointer-events:none; z-index:0;
+  background:radial-gradient(ellipse 55% 70% at 15% 50%, rgba(26,33,41,0.90) 0%, transparent 70%);
+}
+#faq .container{position:relative; z-index:1;}
+.faq-list{max-width:820px; border-top:1px solid var(--border);}
+.faq-item{border-bottom:1px solid var(--border);}
+.faq-q{
+  width:100%; display:flex; align-items:center; justify-content:space-between; gap:var(--s4);
+  padding:var(--s5) 0; text-align:left;
+  font-family:var(--font-display); font-weight:500; font-size:1.15rem; letter-spacing:var(--tracking-tight);
+  color:var(--text);
+}
+.faq-q .pm{width:24px; height:24px; flex:none; color:var(--accent); transition:transform var(--dur-base) var(--ease-std);}
+.faq-item[aria-expanded="true"] .pm{transform:rotate(45deg);}
+.faq-a{overflow:hidden; height:0; transition:height var(--dur-slow) var(--ease-out);}
+.faq-a-inner{padding:0 0 var(--s5); color:var(--text-muted); font-size:0.96rem; line-height:1.65; max-width:68ch;}
+@media (prefers-reduced-motion:reduce){.faq-a{transition:none;}}
+
+/* ---------- Autor / Creador ---------- */
+#autor{position:relative;}
+#autor::before{
+  content:""; position:absolute; inset:0; pointer-events:none; z-index:0;
+  background:radial-gradient(ellipse 55% 70% at 85% 50%, rgba(26,33,41,0.90) 0%, transparent 70%);
+}
+#autor .container{position:relative; z-index:1;}
+.autor-grid{
+  display:flex; flex-direction:column; align-items:center; text-align:center; gap:var(--s6);
+}
+.autor-text h2{margin:var(--s3) 0 var(--s4); font-size:1.05rem; font-weight:500; letter-spacing:0.04em;}
+.autor-text p{color:var(--text-muted); font-size:1.05rem; line-height:1.75; max-width:52ch; margin:0 auto;}
+.autor-role{
+  font-size:0.72rem; font-weight:700; letter-spacing:0.16em; text-transform:uppercase;
+  color:var(--accent); margin-top:var(--s3); text-align:center;
+}
+.autor-text strong{color:var(--text); font-weight:600;}
+.autor-badges{display:flex; flex-wrap:wrap; gap:8px; margin-top:var(--s5); justify-content:center;}
+.autor-badge{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:6px 16px; border-radius:var(--r-pill);
+  border:1px solid var(--border); background:rgba(255,255,255,0.04);
+  font-size:0.78rem; font-weight:500; color:var(--text-muted); letter-spacing:0.03em;
+}
+.autor-badge.hl{border-color:rgba(249,178,51,0.38); background:rgba(249,178,51,0.08); color:var(--accent);}
+.autor-titulo{font-size:clamp(2.4rem,5vw,3.8rem); letter-spacing:var(--tracking-display); margin-bottom:var(--s3);}
+.autor-sep{width:60px; height:2px; background:linear-gradient(to right, transparent, var(--accent), transparent); border-radius:999px;}
+.autor-img-col{display:flex; flex-direction:column; align-items:center; gap:var(--s3);}
+.autor-photo{
+  width:260px; height:260px; border-radius:50%; overflow:hidden;
+  border:3px solid rgba(255,255,255,0.90);
+  box-shadow:0 0 0 6px rgba(255,255,255,0.06), 0 0 22px 4px rgba(255,255,255,0.30), 0 32px 64px rgba(0,0,0,0.55);
+}
+.autor-photo img{width:100%; height:100%; object-fit:cover; object-position:center top; display:block;}
+
+/* ---------- CTA final ---------- */
+.final{position:relative; overflow:hidden; background:#0C0F12;}
+.final::before{
+  content:""; position:absolute; inset:0; pointer-events:none; z-index:0;
+  background:radial-gradient(ellipse 60% 80% at 50% 50%, rgba(26,33,41,0.95) 0%, transparent 70%);
+}
+.final::after{
+  content:""; position:absolute; inset:0; pointer-events:none; z-index:1;
+  background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);
+  background-size:64px 64px; opacity:.18;
+  -webkit-mask-image:radial-gradient(ellipse 100% 100% at 50% 0%,#000 0%,transparent 80%);
+  mask-image:radial-gradient(ellipse 100% 100% at 50% 0%,#000 0%,transparent 80%);
+}
+.final .container{position:relative; z-index:2; text-align:center; max-width:840px;}
+.final .eyebrow{justify-content:center; display:flex;}
+.final h2{font-size:clamp(2.2rem,5.4vw,3.6rem); margin:var(--s4) 0; letter-spacing:var(--tracking-display);}
+.final h2 .amber{color:var(--accent);}
+.final p{color:var(--text-muted); font-size:1.1rem; max-width:56ch; margin:0 auto var(--s6);}
+.final .hero-cta{justify-content:center;}
+.final-strip{
+  display:inline-flex; align-items:center; gap:var(--s4); flex-wrap:wrap; justify-content:center;
+  margin-top:var(--s6); padding-top:var(--s5); border-top:1px solid var(--border);
+}
+.final-strip .it{display:flex; align-items:center; gap:8px; font-size:0.85rem; color:var(--text-muted);}
+.final-strip .it svg{width:16px; height:16px; color:var(--accent);}
+
+/* ---------- Usuarios flotante ---------- */
+.usuarios-float{
+  position:fixed; bottom:28px; left:28px; z-index:999;
+  display:flex; align-items:center; gap:8px;
+  background:rgba(12,15,18,0.88); backdrop-filter:blur(12px);
+  border:1px solid var(--border-strong); border-radius:var(--r-pill);
+  padding:8px 16px 8px 12px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.4);
+}
+.usuarios-float svg{width:16px; height:16px; color:var(--accent); flex-shrink:0;}
+.usuarios-float span{font-size:0.78rem; color:var(--text-muted); line-height:1.4;}
+.usuarios-float strong{color:var(--text); font-weight:700;}
+
+/* ---------- WhatsApp flotante ---------- */
+.wa-float{
+  position:fixed; bottom:28px; right:28px; z-index:999;
+  width:56px; height:56px; border-radius:50%;
+  background:#25D366; color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 4px 20px rgba(37,211,102,0.45);
+  transition:transform 200ms var(--ease-out), box-shadow 200ms var(--ease-out);
+}
+.wa-float:hover{
+  transform:scale(1.1);
+  box-shadow:0 0 0 6px rgba(37,211,102,0.15), 0 0 28px 6px rgba(37,211,102,0.40);
+}
+.wa-float svg{width:30px; height:30px;}
+
+/* ---------- Garantía ---------- */
+.garantia-wrap{background:#0C0F12; padding:var(--s5) 0 var(--s8);}
+.garantia-card{
+  max-width:780px; margin:0 auto;
+  display:flex; align-items:center; gap:var(--s5);
+  background:rgba(249,178,51,0.06);
+  border:1px solid rgba(249,178,51,0.3); border-left:3px solid var(--accent);
+  border-radius:var(--r-ui); padding:var(--s5) var(--s6);
+}
+@media(max-width:600px){.garantia-card{flex-direction:column; text-align:center;}}
+.garantia-icon{
+  flex-shrink:0; width:64px; height:64px; border-radius:50%;
+  border:2px solid var(--accent);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 0 14px 2px rgba(249,178,51,0.25);
+}
+.garantia-icon svg{width:28px; height:28px; color:var(--accent);}
+.garantia-body h3{font-family:var(--font-display); font-size:1.15rem; font-weight:700; color:var(--text); margin-bottom:6px;}
+.garantia-body p{font-size:0.92rem; color:var(--text-muted); line-height:1.65; max-width:55ch;}
+.garantia-body strong{color:var(--text); font-weight:600;}
+
+/* ---------- Footer ---------- */
+footer{background:var(--bg-deep); border-top:1px solid var(--border); padding:var(--s6) 0;}
+.foot-inner{display:flex; align-items:center; justify-content:space-between; gap:var(--s4); flex-wrap:wrap;}
+.foot-inner p{font-size:0.8rem; color:var(--text-faint);}
+.foot-inner .links{display:flex; gap:var(--s4); font-size:0.82rem; color:var(--text-muted);}
+.foot-inner .links a:hover{color:var(--accent);}
+
+/* reveal */
+.reveal{opacity:0; transform:translateY(16px); transition:opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out);}
+.reveal.in{opacity:1; transform:none;}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1; transform:none; transition:none;}}
+
+/* ---------- Button sweep (ref: animated CTA) ---------- */
+.btn{position:relative; overflow:hidden;}
+.btn-primary::after{
+  content:""; position:absolute; top:0; left:-120%; width:60%; height:100%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,0.55),transparent);
+  transform:skewX(-18deg); pointer-events:none;
+}
+.btn-primary:hover::after{animation:btn-sweep 720ms var(--ease-out);}
+@keyframes btn-sweep{from{left:-120%;}to{left:160%;}}
+@media (prefers-reduced-motion:reduce){.btn-primary:hover::after{animation:none;}}
+
+/* ---------- Hero / stage video media ---------- */
+.hero-media{position:relative; background:linear-gradient(135deg,rgba(58,70,84,0.55),rgba(26,33,41,0.85));}
+.ados-video{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity var(--dur-slow) var(--ease-out); background:#1A2129;}
+.hero-media.ready .ados-video,
+.player-stage.ready .ados-video{opacity:1;}
+.media-ph{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; transition:opacity var(--dur-base) var(--ease-std);}
+.hero-media.ready .media-ph{opacity:0;}
+.media-ph .iso-cube{position:static; transform:none; width:42%; margin-bottom:var(--s4);}
+.media-ph .iso-bars{position:absolute;}
+.ph-hint{margin-top:10px; font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-faint); border:1px dashed var(--border-strong); padding:5px 10px;}
+.hero-compat{margin-top:var(--s4); font-size:0.82rem; color:var(--text-faint);}
+
+/* ---------- Video Coverflow ---------- */
+#demo .section-head{text-align:center; margin-left:auto; margin-right:auto;}
+#demo .section-head .eyebrow{font-size:0.85rem; letter-spacing:0.14em;}
+.demo-carousel{position:relative; width:100%; overflow:hidden; padding:var(--s5) 0;}
+.demo-track{
+  display:flex; align-items:center; justify-content:center;
+  position:relative; perspective:1300px; height:440px;
+}
+@media(max-width:900px){.demo-track{height:300px;}}
+@media(max-width:560px){.demo-track{height:195px;}}
+.demo-slide{
+  position:absolute; width:62%;
+  border-radius:var(--r-ui); overflow:hidden;
+  aspect-ratio:16/9; background:#0C0F12; border:1px solid var(--border);
+  transition:transform 550ms cubic-bezier(0.16,1,0.3,1), opacity 550ms ease, filter 550ms ease, box-shadow 550ms ease;
+  cursor:pointer; will-change:transform,opacity;
+}
+.demo-slide video{width:100%; height:100%; object-fit:cover; display:block;}
+.demo-slide:not(.is-active) .demo-overlay{opacity:0;}
+.demo-overlay{
+  position:absolute; bottom:0; left:0; right:0; z-index:2; pointer-events:none;
+  background:rgba(8,10,13,0.94);
+  display:flex; flex-direction:row; align-items:center;
+  padding:10px 16px; gap:10px; overflow:hidden;
+  transition:opacity 300ms ease;
+}
+.demo-overlay-k{font-size:0.62rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--accent); font-weight:700; flex-shrink:0; white-space:nowrap;}
+.demo-overlay-sep{color:rgba(255,255,255,0.25); font-size:0.75rem; flex-shrink:0;}
+.demo-overlay-t{font-family:var(--font-display); font-weight:700; font-size:1rem; color:#fff; line-height:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.demo-arrow{
+  position:absolute; top:50%; transform:translateY(-50%); z-index:10;
+  width:44px; height:44px; border-radius:999px;
+  background:rgba(12,15,18,0.8); border:1px solid var(--border-strong);
+  color:#fff; display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:background var(--dur-base) var(--ease-std), border-color var(--dur-base) var(--ease-std);
+}
+.demo-arrow:hover{background:var(--accent); border-color:var(--accent); color:var(--on-accent);}
+.demo-arrow.prev{left:var(--s3);}
+.demo-arrow.next{right:var(--s3);}
+.demo-arrow svg{width:20px; height:20px;}
+.demo-dots{display:flex; justify-content:center; gap:8px; margin-top:var(--s4);}
+.demo-dot{width:6px; height:6px; border-radius:999px; background:var(--border-strong); cursor:pointer; transition:background var(--dur-base) var(--ease-std), width var(--dur-base) var(--ease-std);}
+.demo-dot.active{background:var(--accent); width:24px;}
+</style>
+</head>
+<body>
+
+<!-- ============ TOP BAR ============ -->
+<div class="topbar" role="banner">
+  <div class="topbar-inner">
+    <a href="#inicio" class="brand" aria-label="ADOS — inicio">
+      <svg width="26" height="26" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <g stroke-linejoin="round" stroke-width="3">
+          <path d="M50 8 L86 28.5 L50 49 L14 28.5 Z" fill="#F9B233" stroke="#F9B233"></path>
+          <path d="M86 28.5 L86 71 L50 92 L50 49 Z" fill="#E7A11E" stroke="#E7A11E"></path>
+          <path d="M14 28.5 L50 49 L50 92 L14 71 Z" fill="#3A4654" stroke="#3A4654"></path>
+        </g>
+      </svg>
+      <span class="brand-name">ADOS</span>
+      <span class="brand-sub">Plugin para Revit</span>
+    </a>
+    <nav class="topnav" aria-label="Secciones">
+      <a href="#herramientas">Herramientas</a>
+      <a href="#demo">En acción</a>
+      <a href="#precio">Planes</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <a href="#precio" class="btn btn-primary btn-sm">Ver planes</a>
+  </div>
+</div>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="inicio">
+  <video class="hero-bg-video" autoplay muted loop playsinline src="videos/hero-bg.mp4"></video>
+  <div class="hero-bg-overlay"></div>
+  <div class="container">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <div class="hero-eyebrow">
+          <span class="tag tag-amber">Plugin nativo para Revit</span>
+          <span class="tag tag-ghost">2024 · 2025 · 2026</span>
+        </div>
+        <h1>Crea y documenta estructuras<br><span class="amber">con tan solo</span> unos clics.</h1>
+        <p class="hero-sub">ADOS es un plugin nativo para Revit con <span id="sub-tools">32</span> herramientas que automatizan el armado de refuerzo, el modelado y la documentación dentro de Revit. Usted modela; ADOS hace el trabajo repetitivo.</p>
+        <div class="hero-cta">
+          <a href="#precio" class="btn btn-primary">Ver planes de suscripción <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a href="#demo" class="btn btn-ghost">Ver en acción</a>
+        </div>
+        <p class="hero-compat">Compatible con Revit 2024, 2025 y 2026 · Instalación nativa.</p>
+        <div class="hero-metrics">
+          <div class="metric"><div class="n" id="m-tools">32</div><div class="l">Herramientas</div></div>
+          <div class="metric"><div class="n">5</div><div class="l">Paneles en Revit</div></div>
+          <div class="metric"><div class="n">3</div><div class="l">Planes de suscripción</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROBLEMA ============ -->
+<section class="deep" id="problema">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">El trabajo que no se ve</p>
+      <h2>Las horas se van en lo repetitivo, no en lo que importa.</h2>
+      <p class="lead">Modelar refuerzo y documentar a mano consume el tiempo que debería ir al criterio de ingeniería. ADOS ataca exactamente esas tareas.</p>
+    </div>
+    <div class="pain-grid">
+      <div class="pain reveal">
+        <div class="pain-video-wrap">
+          <video class="pain-video" src="videos/PG2-1.mp4" muted loop playsinline autoplay></video>
+        </div>
+        <div class="pain-header"><span class="idx">01</span><h3>Modelado automático de acero</h3></div>
+        <p>Genera el refuerzo de columnas, vigas, muros y zapatas en segundos. ADOS coloca cada barra, gancho y traslapo por ti.</p>
+      </div>
+      <div class="pain reveal">
+        <div class="pain-video-wrap">
+          <video class="pain-video" src="videos/PG2-2.mp4" muted loop playsinline autoplay></video>
+        </div>
+        <div class="pain-header"><span class="idx">02</span><h3>Documentación automatizada</h3></div>
+        <p>Genera planos, secciones, alzados y cotas directamente en Revit. Sin rehacer, sin errores manuales, listo para entrega.</p>
+      </div>
+      <div class="pain reveal">
+        <div class="pain-video-wrap">
+          <video class="pain-video" src="videos/PG2-3.mp4" muted loop playsinline autoplay></video>
+        </div>
+        <div class="pain-header"><span class="idx">03</span><h3>Gestiona mucho más rápido</h3></div>
+        <p>Filtra, unifica y organiza elementos estructurales con un clic. Lo que antes tomaba horas, ahora lo resuelves en minutos.</p>
+      </div>
+    </div>
+    <div class="problem-foot reveal">
+      <p>ADOS convierte esas tareas en <span class="amber">un clic</span>. Usted decide el criterio; el plugin ejecuta el resto.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HERRAMIENTAS ============ -->
+<section class="deep" id="herramientas">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">Las herramientas del plugin</p>
+      <h2>Cinco paneles dentro de Revit, una sola lógica de trabajo.</h2>
+      <p class="lead">Acero, documentación, modelado, utilidades generales y su cuenta. Cada herramienta resuelve una tarea concreta del flujo estructural y arquitectónico.</p>
+    </div>
+    <div id="tools-root"></div>
+    <div id="panel-tabs-section" style="margin-top:var(--s7);">
+      <div id="panel-tabs-bar"></div>
+      <div id="panel-tabs-content"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DEMO EN ACCIÓN ============ -->
+<section class="deep" id="demo">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">Mira las herramientas en acción</p>
+      <h2>Véalo funcionando antes de instalar.</h2>
+      <p class="lead">Capturas reales de las herramientas más usadas, ejecutándose dentro de Revit. Elija una y reprodúzcala en el visor.</p>
+    </div>
+    <div class="player reveal" id="demo-root"></div>
+  </div>
+</section>
+
+<!-- ============ PRICING ============ -->
+<section id="precio">
+  <div class="container">
+    <div class="section-head reveal" style="max-width:680px;">
+      <p class="eyebrow">Planes de suscripción</p>
+      <h2>Planes de suscripción. Todo incluido.</h2>
+    </div>
+    <div class="plans">
+      <!-- Mensual -->
+      <div class="plan reveal">
+        <div class="plan-name">Mensual</div>
+        <div class="plan-kicker">Flexibilidad máxima</div>
+        <div class="plan-price"><span class="amt">$25.000</span><span class="cur">COP</span></div>
+        <p class="plan-bill">Facturado mensualmente</p>
+        <a href="#" class="btn btn-ghost plan-cta">Suscribirse</a>
+        <ul class="plan-feats">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Acceso a las 32 herramientas</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Revit 2024, 2025 y 2026</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Actualizaciones incluidas</li>
+        </ul>
+      </div>
+      <!-- Semestral -->
+      <div class="plan reveal">
+        <div class="plan-name">Semestral</div>
+        <div class="plan-kicker">Opción intermedia</div>
+        <div class="plan-price"><span class="amt">$120.000</span><span class="cur">COP</span></div>
+        <p class="plan-bill"><strong>$20.000/mes</strong> · Facturado cada 6 meses</p>
+        <span class="plan-save">Ahorras 20% vs mensual</span>
+        <a href="#" class="btn btn-ghost plan-cta">Suscribirse</a>
+        <ul class="plan-feats">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Acceso a las 32 herramientas</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Revit 2024, 2025 y 2026</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Actualizaciones incluidas</li>
+        </ul>
+      </div>
+      <!-- Anual (destacado) -->
+      <div class="plan plan-featured reveal">
+        <span class="plan-badge">Mejor valor</span>
+        <div class="plan-name">Anual</div>
+        <div class="plan-kicker">Acceso completo por 1 año</div>
+        <div class="plan-price"><span class="amt">$180.000</span><span class="cur">COP</span></div>
+        <p class="plan-bill"><strong>$15.000/mes</strong> · Facturado anualmente</p>
+        <span class="plan-save">Ahorras $120.000</span>
+        <a href="#" class="btn btn-primary plan-cta">Suscribirse <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <ul class="plan-feats">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Acceso a las 32 herramientas</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Revit 2024, 2025 y 2026</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Actualizaciones incluidas</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>El mejor precio por mes</li>
+        </ul>
+      </div>
+    </div>
+    <p class="pricing-foot reveal">Todos los planes incluyen acceso completo a las 32 herramientas. Cancela cuando quieras desde tu panel de cuenta.</p>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="deep" id="faq">
+  <div class="container">
+    <div class="section-head reveal" style="max-width:680px;">
+      <p class="eyebrow">Preguntas frecuentes</p>
+      <h2>Lo que necesita saber antes de empezar.</h2>
+    </div>
+    <div class="faq-list" id="faq-root"></div>
+  </div>
+</section>
+
+<hr style="border:none; border-top:1px solid rgba(255,255,255,0.08); margin:0;">
+
+<!-- ============ AUTOR / CREADOR ============ -->
+<section class="deep" id="autor">
+  <div class="container">
+    <div class="autor-grid">
+      <h2 class="autor-titulo reveal">El desarrollador</h2>
+      <div class="autor-sep reveal"></div>
+      <div class="autor-img-col reveal">
+        <div class="autor-photo">
+          <img src="uploads/autor.png" alt="Desarrollador de ADOS" loading="lazy">
+        </div>
+        <p class="autor-role">INGENIERO CIVIL | BIM MANAGER</p>
+      </div>
+      <div class="autor-text reveal">
+        <h2>CONSTRUIDO POR ALGUIEN QUE <span style="color:var(--accent)">USA REVIT TODOS LOS DÍAS.</span></h2>
+        <p>Soy ingeniero civil con posgrado en <strong>Master BIM Manager</strong>, con años de experiencia liderando proyectos de obra civil y estructurales implementando la metodología BIM y usando Revit como software principal. En ese día a día me di cuenta de que las tareas más repetitivas — el modelado del acero de refuerzo, la generación de planos y la documentación — consumían la mayor parte del tiempo del equipo. ADOS nació de esa frustración: una herramienta construida por un ingeniero, para ingenieros y arquitectos.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr style="border:none; border-top:1px solid rgba(255,255,255,0.08); margin:0;">
+
+<!-- ============ CTA FINAL ============ -->
+<section class="final" id="acceso">
+  <div class="container">
+    <p class="eyebrow">Empiece hoy</p>
+    <h2>Automatice su flujo en Revit <span class="amber">desde COP $25.000 al mes.</span></h2>
+    <p>Acceso completo a las 32 herramientas en Revit 2024, 2025 y 2026. Elija el plan que se ajuste a su ritmo y cancele cuando quiera.</p>
+    <div class="hero-cta">
+      <a href="#precio" class="btn btn-primary btn-neon">SUSCRÍBETE <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    </div>
+    <div class="final-strip">
+      <span class="it"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Cancela cuando quieras</span>
+      <span class="it"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>32 herramientas incluidas</span>
+      <span class="it"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Actualizaciones incluidas</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ GARANTÍA ============ -->
+<div class="garantia-wrap">
+  <div class="container">
+    <div class="garantia-card reveal">
+      <div class="garantia-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="garantia-body">
+        <h3>Garantía del producto</h3>
+        <p>Si por alguna razón ADOS no cumple sus expectativas, <strong>le devolvemos el dinero</strong>. Contáctenos dentro de los primeros 3 días y gestionamos el reembolso sin preguntas ni complicaciones.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<footer>
+  <div class="container foot-inner">
+    <div style="display:flex; align-items:center; gap:14px;">
+      <svg width="34" height="34" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <g stroke-linejoin="round" stroke-width="3">
+          <path d="M50 8 L86 28.5 L50 49 L14 28.5 Z" fill="#F9B233" stroke="#F9B233"></path>
+          <path d="M86 28.5 L86 71 L50 92 L50 49 Z" fill="#E7A11E" stroke="#E7A11E"></path>
+          <path d="M14 28.5 L50 49 L50 92 L14 71 Z" fill="#3A4654" stroke="#3A4654"></path>
+        </g>
+      </svg>
+      <p>ADOS Ingeniería y Arquitectura SAS · Consultoría BIM e ingeniería · Colombia</p>
+    </div>
+    <div class="links">
+      <a href="#herramientas">Herramientas</a>
+      <a href="#precio">Precio</a>
+      <a href="#faq">FAQ</a>
+    </div>
+  </div>
+</footer>
+
+<!-- Usuarios flotante -->
+<div class="usuarios-float">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+  <span><strong>157 profesionales</strong><br>ya lo están usando</span>
+</div>
+
+<!-- WhatsApp flotante -->
+<a href="https://wa.me/573102335153" target="_blank" rel="noopener" class="wa-float" aria-label="Contactar por WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+</a>
+
+<script>
+/* ====================== VIDEOS ======================
+   El visor y la portada quedan listos para sus videos.
+   Cuando suba un archivo a la carpeta videos/, añada su
+   ruta a esta lista y aparecerá reproduciéndose solo.
+   Vacío = se muestran los marcadores de posición.        */
+const AVAILABLE_VIDEOS = [
+  'videos/portada.mp4',
+  'videos/V-P1-1.mp4',
+  'videos/V-P1-2.mp4',
+  'videos/V-P1-3.mp4',
+  'videos/V-P1-4.mp4',
+  'videos/V-P1-5.mp4',
+];
+function hasVideo(path){ return AVAILABLE_VIDEOS.indexOf(path) !== -1; }
+
+/* ====================== DATA ====================== */
+// Generic technical line-icon set (reused as [ICONO_X] placeholders)
+const ICONS = {
+  wall:'<path d="M3 6h18M3 12h18M3 18h18"/><path d="M9 3v18M15 3v18"/>',
+  cut:'<path d="M6 4v7M6 13v7"/><circle cx="6" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><path d="M20 5 9 12l11 7"/>',
+  grid:'<rect x="3" y="3" width="18" height="18" rx="1"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/>',
+  square:'<rect x="4" y="4" width="16" height="16" rx="1"/><path d="M4 9h16M9 4v16"/>',
+  column:'<path d="M8 3h8M8 21h8M10 3v18M14 3v18"/>',
+  beam:'<path d="M3 8h18v8H3z"/><path d="M3 12h18"/>',
+  frame:'<path d="M3 5h18M3 19h18M5 5v14M19 5v14"/>',
+  stirrup:'<rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 9h6M9 13h6"/>',
+  layers:'<path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="M3 13l9 5 9-5"/>',
+  corner:'<path d="M4 4v16h16"/><path d="M4 4h10v10"/>',
+  copy:'<rect x="9" y="9" width="11" height="11" rx="1"/><path d="M5 15V5a1 1 0 0 1 1-1h10"/>',
+  room:'<path d="M3 3h18v18H3z"/><path d="M3 9h6V3"/>',
+  floor:'<path d="M3 7l9-4 9 4-9 4-9-4Z"/><path d="M3 7v6l9 4 9-4V7"/>',
+  base:'<path d="M4 16h16M6 16v-4h12v4M9 12V8h6v4"/>',
+  sheet:'<path d="M6 2h9l5 5v15H6z"/><path d="M15 2v5h5"/><path d="M9 13h6M9 17h6"/>',
+  rename:'<path d="M11 4h10M11 9h10M11 14h6"/><path d="M3 4l3 3-3 3"/>',
+  dim:'<path d="M3 12h18"/><path d="M3 8v8M21 8v8M8 9v6M16 9v6"/>',
+  dimcol:'<path d="M12 3v18"/><path d="M8 3h8M8 21h8M9 8h6M9 16h6"/>',
+  mark:'<path d="M4 4h11l5 5v11H4z"/><circle cx="12" cy="13" r="3"/>',
+  axis:'<path d="M3 21h18M5 21V7M19 21V7"/><circle cx="5" cy="5" r="2"/><circle cx="19" cy="5" r="2"/>',
+  section:'<path d="M4 4h16v16H4z"/><path d="M4 12h16"/><path d="M8 4v4M16 16v4"/>',
+  longcut:'<path d="M3 9h18v6H3z"/><path d="M3 12h18M7 9v6M12 9v6M17 9v6"/>',
+  join:'<circle cx="8" cy="12" r="5"/><circle cx="16" cy="12" r="5"/>',
+  trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>',
+  filter:'<path d="M3 5h18l-7 8v6l-4-2v-4L3 5Z"/>',
+  line:'<path d="M3 17 17 3"/><circle cx="3" cy="17" r="1.6"/><circle cx="17" cy="3" r="1.6"/><path d="M9 7l2 2M7 11l2 2"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>'
+};
+
+const PANELS = [
+  { name:'Aceros', tag:'Acero de refuerzo', tone:'amber', tools:[
+    ['grid','Acero C. Corridos','Crea acero de forma automática en cimientos corridos.','AceroCCorridos.png'],
+    ['column','Acero Columnas','Crea acero longitudinal de manera automática en las columnas del modelo.','AceroColumnas.png'],
+    ['wall','Acero Muros','Crea refuerzos en los muros del modelo.','AceroMuros.png'],
+    ['beam','Acero Vigas','Crea acero longitudinal de manera automática en vigas.','AceroVigas.png'],
+    ['frame','Acero V. Continuas','Crea acero longitudinal en vigas continuas considerando todas las columnas que las atraviesan.','AceroVContinuas.png'],
+    ['square','Acero Zapatas','Crea refuerzos en las zapatas del modelo.','AceroZapatas.png'],
+    ['stirrup','Estribos Columnas','Crea estribos de manera automática en las columnas del modelo.','EstribosColumnas.png'],
+    ['stirrup','Estribos Vigas','Crea estribos de manera automática en las vigas del modelo.','EstribosVigas.png'],
+  ]},
+  { name:'Documentación', tag:'Planos, cotas y secciones', tone:'steel', tools:[
+    ['dimcol','Acotar Columnas','Crea acotaciones automáticas en columnas.','AcotarColumnas.png'],
+    ['axis','Acotar Ejes','Crea acotaciones automáticas de ejes.','AcotarEjes.png'],
+    ['dim','Acotar Cimientos','Crea acotaciones automáticas en cimientos.','AcotarCimientos.png'],
+    ['line','Acotar Línea','Selecciona dos puntos para definir una línea ortogonal y acota automáticamente todos los elementos que intercepta.',null],
+    ['sheet','Generar Planos','Crea hojas de plano en blanco con nomenclatura definida.','GenerarPlanos.png'],
+    ['mark','Asignar Marca','Asigna el parámetro de marca según ubicación a vigas, columnas y zapatas.','AsignarMarca.png'],
+    ['rename','Renombrar Planos','Renombra hojas de plano existentes con nomenclatura definida.','RenombrarPlanos.png'],
+    ['section','Sección Zapatas','Crea secciones en zapatas a partir de una selección.','SeccionZapatas.png'],
+    ['column','Alzados Columnas','Crea secciones de alzado en columnas del proyecto.','AlzadosColumnas.png'],
+    ['section','Secciones Columnas','Crea secciones de columnas a partir del parámetro Marca.','SeccionesColumnas.png'],
+    ['column','Alzado Columna','Crea una sección de alzado de una columna seleccionada.','AlzadoColumna.png'],
+    ['longcut','Sección Longitudinal Vigas','Crea sección de corte a lo largo de varias vigas por Marca.','SeccionLongitunalVigas.png'],
+    ['beam','Secciones Transversales en Vigas','Crea secciones transversales de vigas por Marca.','SeccionesTransversalesVigas.png'],
+    ['section','Sección Elementos Estructurales','Crea secciones de columnas o vigas seleccionadas.','SeccionElementosEstructurales.png'],
+    ['longcut','Sección Longitudinal en Viga','Crea sección longitudinal de una viga seleccionada.','SeccionLongitunalViga.png'],
+  ]},
+  { name:'Modelado', tag:'Acabados y suelos', tone:'amber', tools:[
+    ['layers','A. Muros Especiales','Crea acabados automáticos en muros no básicos por selección de caras.','AMurosEspeciales.png'],
+    ['corner','Acabados en Muros','Crea acabados en muros seleccionando las caras, generando una envolvente continua.','AcabadosEnMuros.png'],
+    ['room','Acabados por Contorno','Crea acabados de muros a partir del contorno de una habitación (Room).','AcabadosConVinculos.png'],
+    ['floor','A. Suelos Habitación','Crea acabados de suelos a partir de una habitación definida.','ASuelosHabitacion.png'],
+    ['base','Solados','Crea solados automáticos en zapatas y vigas, extendiéndose hasta la cara de las columnas.','Solados.png'],
+  ]},
+  { name:'General', tag:'Utilidades', tone:'steel', tools:[
+    ['join','Unir Elementos','Une los elementos seleccionados en un solo elemento geométrico.','UnirElementos.png'],
+    ['trash','Eliminar Habitaciones Vacías','Elimina habitaciones sin área o sin asignar.','EliminarHabitacionesVacias.png'],
+    ['filter','Filtro Viga · Columna · Zapatas','Aplica filtros de acero y secciones sobre la vista activa.','FiltroViga.png'],
+    ['filter','Filtro por Parámetro','Filtra, colorea y selecciona elementos por parámetro personalizado.','FiltrarPorParametro.png'],
+  ]},
+];
+
+const DEMOS = [
+  ['Aceros','Acero C. Corridos','Crea acero de forma automática en cimientos corridos.','videos/V-P1-1.mp4'],
+  ['Aceros','Acero Columnas','Crea acero longitudinal de manera automática en las columnas del modelo.','videos/V-P1-2.mp4'],
+  ['Aceros','Acero Muros','Crea refuerzos en los muros del modelo.','videos/V-P1-3.mp4'],
+  ['Aceros','Acero Vigas','Crea acero longitudinal de manera automática en vigas.','videos/V-P1-4.mp4'],
+  ['Aceros','Acero V. Continuas','Crea acero longitudinal en vigas continuas considerando todas las columnas que las atraviesan.','videos/V-P1-5.mp4'],
+];
+
+const FAQ = [
+  ['¿Con qué versiones de Revit es compatible?','ADOS es un plugin nativo para Revit y funciona en las versiones <strong>2024, 2025 y 2026</strong>. Se instala directamente en Revit, sin complementos adicionales.'],
+  ['¿Cómo funciona la suscripción?','ADOS se ofrece por suscripción en tres planes: mensual, semestral y anual. Todos incluyen acceso completo a las 32 herramientas y a las actualizaciones, y se gestionan desde su panel de cuenta.'],
+  ['¿Puedo cancelar cuando quiera?','Sí. Puede cancelar en cualquier momento desde su panel de cuenta. Conserva el acceso hasta el final del periodo que ya pagó; no hay penalidades.'],
+  ['¿Cómo instalo y activo ADOS?','Recibe un instalador nativo (.addin) que carga ADOS dentro de Revit; la documentación incluye el paso a paso. Luego inicia sesión con su cuenta para activar la suscripción y habilitar las herramientas.'],
+  ['¿Qué soporte incluye?','Todos los planes incluyen soporte directo. Atendemos reportes de errores y sugerencias, y su retroalimentación define qué herramientas mejoramos primero.'],
+];
+
+/* ====================== RENDER ====================== */
+function iconSvg(key){
+  const p = ICONS[key] || ICONS.square;
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';
+}
+
+(function renderTools(){
+  const root = document.getElementById('tools-root');
+  let n = 0, html = '';
+  PANELS.forEach(panel=>{
+    const toneClass = panel.tone === 'steel' ? 'tag-steel' : 'tag-amber';
+    const cnt = panel.tools.length;
+    const countLabel = panel.account ? 'Acceso' : String(cnt).padStart(2,'0')+' herramientas';
+    html += '<div class="panel reveal'+(panel.account ? ' panel-account' : '')+'">';
+    html += '<div class="panel-head"><h3>'+panel.name+'</h3><span class="count">'+countLabel+'</span><span class="chip"><span class="tag '+toneClass+'">'+panel.tag+'</span></span></div>';
+    if(panel.note){
+      html += '<div class="panel-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><p>'+panel.note+'</p></div>';
+    }
+    let toolsHtml = '';
+    panel.tools.forEach(t=>{
+      n++;
+      const icon = t[3]
+        ? '<img src="uploads/'+t[3]+'" alt="" width="72" height="72" loading="lazy">'
+        : iconSvg(t[0]);
+      toolsHtml += '<div class="tool"><div class="tool-ic">'+icon+'</div>'
+                 + '<div class="tool-body"><h4>'+t[1]+'</h4><p>'+t[2]+'</p></div></div>';
+    });
+    const toolWidth = 216; // 200px + 16px gap
+    const totalWidth = panel.tools.length * toolWidth;
+    const speed = 60; // px/s constante para todos
+    const duration = (totalWidth / speed).toFixed(1);
+    const panelIndex = PANELS.indexOf(panel);
+    const delay = -(panelIndex * 14).toFixed(1);
+    const animName = panelIndex % 2 === 0 ? 'marquee-scroll' : 'marquee-scroll-rev';
+    html += '<div class="tools-marquee"><div class="tools-grid" style="animation-name:'+animName+';animation-duration:'+duration+'s;animation-delay:'+delay+'s">'+toolsHtml+toolsHtml+'</div></div></div>';
+  });
+  root.innerHTML = html;
+  // Keep marketing count consistent with the real tool list (account panel excluded)
+  const total = PANELS.reduce((a,p)=> a + (p.account ? 0 : p.tools.length), 0);
+  const mt = document.getElementById('m-tools'); if(mt) mt.textContent = total;
+  const it = document.getElementById('inc-tools'); if(it) it.textContent = total + ' herramientas';
+  const st = document.getElementById('sub-tools'); if(st) st.textContent = total;
+})();
+
+(function renderPanelTabs(){
+  const bar = document.getElementById('panel-tabs-bar');
+  const content = document.getElementById('panel-tabs-content');
+  if(!bar || !content) return;
+  let tabsHtml = '', contentHtml = '';
+  PANELS.forEach((panel, i)=>{
+    const active = i === 0 ? ' active' : '';
+    tabsHtml += '<button class="ptab'+active+'" data-idx="'+i+'">'
+      + panel.name + '<span class="ptab-count">'+String(panel.tools.length).padStart(2,'0')+'</span></button>';
+    contentHtml += '<div class="ptab-panel'+active+'" data-idx="'+i+'">';
+    contentHtml += '<div class="ptab-card"><h3 class="ptab-card-title">'+panel.name+'</h3><div class="ptool-list">';
+    panel.tools.forEach((t, ti)=>{
+      const icon = t[3]
+        ? '<img src="uploads/'+t[3]+'" alt="" width="40" height="40" loading="lazy">'
+        : iconSvg(t[0]);
+      if(ti > 0) contentHtml += '<div class="ptool-divider"></div>';
+      contentHtml += '<div class="ptool"><div class="ptool-ic">'+icon+'</div>'
+                   + '<div class="ptool-body"><div class="ptool-name">'+t[1]+'</div>'
+                   + '<div class="ptool-desc">'+t[2]+'</div></div></div>';
+    });
+    contentHtml += '</div></div></div>';
+  });
+  bar.innerHTML = tabsHtml;
+  content.innerHTML = contentHtml;
+  bar.addEventListener('click', e=>{
+    const btn = e.target.closest('.ptab');
+    if(!btn) return;
+    const idx = btn.dataset.idx;
+    bar.querySelectorAll('.ptab').forEach(b=>b.classList.remove('active'));
+    content.querySelectorAll('.ptab-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    content.querySelector('.ptab-panel[data-idx="'+idx+'"]').classList.add('active');
+  });
+})();
+
+(function renderDemos(){
+  const root = document.getElementById('demo-root');
+  if(!root) return;
+  let current = 0;
+  let animating = false;
+  const n = DEMOS.length;
+
+  function wrapOffset(i){
+    let off = i - current;
+    if(off > n/2) off -= n;
+    if(off < -n/2) off += n;
+    return off;
+  }
+
+  function applyCovers(){
+    root.querySelectorAll('.demo-slide').forEach((slide, i)=>{
+      const off = wrapOffset(i);
+      const abs = Math.abs(off);
+      const dir = off >= 0 ? 1 : -1;
+      slide.classList.toggle('is-active', off === 0);
+      if(abs === 0){
+        slide.style.transform = 'translateX(0) rotateY(0deg) scale(1)';
+        slide.style.opacity = '1';
+        slide.style.zIndex = '4';
+        slide.style.filter = 'brightness(1)';
+        slide.style.boxShadow = '0 32px 80px rgba(0,0,0,0.8)';
+        const v = slide.querySelector('video');
+        if(v && hasVideo(DEMOS[i][3])){ const p=v.play(); if(p&&p.catch) p.catch(()=>{}); }
+      } else if(abs === 1){
+        slide.style.transform = 'translateX('+(dir*63)+'%) rotateY('+(-dir*33)+'deg) scale(0.82)';
+        slide.style.opacity = '0.72';
+        slide.style.zIndex = '3';
+        slide.style.filter = 'brightness(0.48)';
+        slide.style.boxShadow = 'none';
+        const v = slide.querySelector('video'); if(v) v.pause();
+      } else if(abs === 2){
+        slide.style.transform = 'translateX('+(dir*108)+'%) rotateY('+(-dir*46)+'deg) scale(0.65)';
+        slide.style.opacity = '0.38';
+        slide.style.zIndex = '2';
+        slide.style.filter = 'brightness(0.28)';
+        slide.style.boxShadow = 'none';
+        const v = slide.querySelector('video'); if(v) v.pause();
+      } else {
+        slide.style.transform = 'translateX('+(dir*140)+'%) scale(0.5)';
+        slide.style.opacity = '0';
+        slide.style.zIndex = '1';
+        slide.style.filter = 'brightness(0.2)';
+        const v = slide.querySelector('video'); if(v) v.pause();
+      }
+    });
+    root.querySelectorAll('.demo-dot').forEach((d,i)=> d.classList.toggle('active', i===current));
+  }
+
+  function go(newIdx){
+    if(animating || newIdx === current) return;
+    animating = true;
+    current = newIdx;
+    applyCovers();
+    setTimeout(()=>{ animating = false; }, 580);
+  }
+
+  // Build DOM once
+  let slides = '', dots = '';
+  DEMOS.forEach((d,i)=>{
+    slides += '<div class="demo-slide" data-i="'+i+'">'
+      + '<video muted loop playsinline preload="metadata"'+(hasVideo(d[3])?' src="'+d[3]+'"':'')+' style="width:100%;height:100%;object-fit:cover;display:block;"></video>'
+      + '<div class="demo-overlay">'
+      + '<span class="demo-overlay-k">'+d[0]+'</span>'
+      + '<span class="demo-overlay-sep">·</span>'
+      + '<span class="demo-overlay-t">'+d[1]+'</span>'
+      + '</div></div>';
+    dots += '<div class="demo-dot" data-i="'+i+'"></div>';
+  });
+  root.innerHTML =
+    '<div class="demo-carousel">'
+    + '<div class="demo-track">'+slides+'</div>'
+    + '<button class="demo-arrow prev" aria-label="Anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button>'
+    + '<button class="demo-arrow next" aria-label="Siguiente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></button>'
+    + '</div>'
+    + '<div class="demo-dots">'+dots+'</div>';
+
+  root.querySelector('.demo-arrow.prev').addEventListener('click', ()=>{ go((current-1+n)%n); });
+  root.querySelector('.demo-arrow.next').addEventListener('click', ()=>{ go((current+1)%n); });
+  root.querySelectorAll('.demo-dot').forEach(d=> d.addEventListener('click', ()=>{ go(parseInt(d.dataset.i)); }));
+  root.querySelectorAll('.demo-slide').forEach(slide=> slide.addEventListener('click', ()=>{
+    const i = parseInt(slide.dataset.i);
+    if(i !== current) go(i);
+  }));
+
+  applyCovers();
+})();
+
+(function renderFaq(){
+  const root = document.getElementById('faq-root');
+  let html = '';
+  FAQ.forEach((f,i)=>{
+    html += '<div class="faq-item" aria-expanded="false">'
+          + '<button class="faq-q" aria-controls="faq-a-'+i+'" aria-expanded="false">'+f[0]
+          + '<svg class="pm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>'
+          + '<div class="faq-a" id="faq-a-'+i+'" role="region"><div class="faq-a-inner">'+f[1]+'</div></div></div>';
+  });
+  root.innerHTML = html;
+  root.querySelectorAll('.faq-q').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const item = btn.closest('.faq-item');
+      const panel = item.querySelector('.faq-a');
+      const open = item.getAttribute('aria-expanded') === 'true';
+      // close others
+      root.querySelectorAll('.faq-item').forEach(it=>{
+        if(it!==item){ it.setAttribute('aria-expanded','false'); it.querySelector('.faq-q').setAttribute('aria-expanded','false'); it.querySelector('.faq-a').style.height='0px'; }
+      });
+      if(open){ item.setAttribute('aria-expanded','false'); btn.setAttribute('aria-expanded','false'); panel.style.height='0px'; }
+      else{ item.setAttribute('aria-expanded','true'); btn.setAttribute('aria-expanded','true'); panel.style.height = panel.scrollHeight + 'px'; }
+    });
+  });
+})();
+
+/* ====================== HERO MEDIA (cover video) ====================== */
+(function heroMedia(){
+  document.querySelectorAll('.hero-media').forEach(box=>{
+    const v = box.querySelector('.ados-video');
+    if(!v) return;
+    const path = box.getAttribute('data-vid');
+    if(!hasVideo(path)) return; // marcador hasta que suba el video
+    v.addEventListener('loadeddata', ()=> box.classList.add('ready'));
+    v.addEventListener('error', ()=> box.classList.remove('ready'));
+    v.setAttribute('src', path);
+    const p = v.play();
+    if(p && p.catch) p.catch(()=>{});
+  });
+})();
+
+/* ====================== REVEAL ON SCROLL ====================== */
+(function reveal(){
+  if(!('IntersectionObserver' in window)){ document.querySelectorAll('.reveal').forEach(e=>e.classList.add('in')); return; }
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
+  }, { threshold:0.12, rootMargin:'0px 0px -8% 0px' });
+  document.querySelectorAll('.reveal').forEach(e=>io.observe(e));
+})();
+</script>
+</body>
+</html>
