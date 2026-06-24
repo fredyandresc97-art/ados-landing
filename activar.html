@@ -7,173 +7,100 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #EFEFEF;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .card {
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.12);
-      padding: 40px 36px;
-      width: 100%;
-      max-width: 420px;
-    }
-    .logo {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 8px;
-    }
+    body { font-family: 'Segoe UI', sans-serif; background: #EFEFEF; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .card { background: #fff; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.12); padding: 40px 36px; width: 100%; max-width: 420px; }
+    .logo { display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
     .logo img { height: 64px; max-width: 260px; object-fit: contain; }
-    .divider {
-      border: none;
-      border-top: 2px solid #E8A020;
-      margin: 16px 0 24px;
-    }
-    h2 {
-      text-align: center;
-      font-size: 18px;
-      color: #2C3348;
-      margin-bottom: 24px;
-    }
-    label {
-      display: block;
-      font-size: 12px;
-      color: #666;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-
-    input[type=password] {
-      width: 100%;
-      padding: 10px 14px;
-      border: 1px solid #DDD;
-      border-radius: 6px;
-      font-size: 14px;
-      margin-bottom: 16px;
-      outline: none;
-      transition: border 0.2s;
-    }
+    .divider { border: none; border-top: 2px solid #E8A020; margin: 16px 0 24px; }
+    h2 { text-align: center; font-size: 18px; color: #2C3348; margin-bottom: 24px; }
+    label { display: block; font-size: 12px; color: #666; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+    input[type=password] { width: 100%; padding: 10px 14px; border: 1px solid #DDD; border-radius: 6px; font-size: 14px; margin-bottom: 16px; outline: none; transition: border 0.2s; }
     input[type=password]:focus { border-color: #E8A020; }
-    button {
-      width: 100%;
-      padding: 12px;
-      background: #E8A020;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
+    button { width: 100%; padding: 12px; background: #E8A020; color: #fff; border: none;e: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
     button:hover { background: #cf8f18; }
     button:disabled { background: #ccc; cursor: default; }
-    .msg {
-      margin-top: 16px;
-      padding: 12px;
-      border-radius: 6px;
-      font-size: 14px;
-      text-align: center;
-      display: none;
-    }
+    .msg { margin-top: 16px; padding: 12px; border-radius: 6px; font-size: 14px; text-align: center; display: none; }
     .msg.success { background: #E8F5E9; color: #2E7D32; display: block; }
-    .msg.error   { background: #FFEBEE; color: #C62828; display: block; }
+    .msg.error { background: #FFEBEE; color: #C62828; display: block; }
   </style>
 </head>
 <body>
 <div class="card">
   <div class="logo">
-    <img src="2.TITULOADOS.png" alt="ADOS Ingeniería y Arquitectura SAS" />
+    <img src="2.TITULOADOS.png" alt="ADOS" />
   </div>
   <hr class="divider"/>
-  <h2 id="titulo">Establece tu contraseña</h2>
-
-nput type="password" id="pass1" placeholder="Mínimo 8 caracteres" />
-    <label>Confirmar contraseña</label>
-    <input type="password" id="pass2" placeholder="Repite la contraseña" />
+  <h2 id="titulo">Establece tu contrasena</h2>
+  <div id="form-section">
+    <label>Nueva contrasena</label>
+    <input type="password" id="pass1" placeholder="Minimo 8 caracteres" />
+    <label>Confirmar contrasena</label>
+    <input type="password" id="pass2" placeholder="Repite la contrasena" />
     <button id="btn" onclick="establecerContrasena()">Activar cuenta</button>
   </div>
-
   <div id="msg" class="msg"></div>
 </div>
-
 <script>
-  const SUPABASE_URL  = 'https://svfxbbdqekcvquxcbemz.supabase.co';
-  const SUPABASE_ANON = 'sb_publishable_SP80av9QptBAN6vVxFUKcg_Sx9132CG';
-  const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+  var SUPABASE_URL = 'https://svfxbbdqekcvquxcbemz.supabase.co';
+  var SUPABASE_ANON = 'sb_publishable_SP80av9QptBAN6vVxFUKcg_Sx9132CG';
+  var client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
   function parseHash() {
-    const hash = window.location.hash.substring(1);
-    const params = {};
-    hash.split('&').forEach(p => {
-      const [k, v] = p.split('=');
-      if (k) params[decodeURIComponent(k)] = decodeURIComponent(v || '');
+    var hash = window.location.hash.substring(1);
+    var params = {};
+    hash.split('&').forEach(function(p) {
+      var parts = p.split('=');
+      if (parts[0]) params[decodeURIComponent(parts[0])] = decodeURIComponent(parts[1] || '');
     });
     return params;
   }
 
-showMsg('El link es inválido o ha expirado. Contacta a soporte@adosiya.com', 'error');
+  async function init() {
+    var params = parseHash();
+    if (params.error) {
+      showMsg('El link es invalido o ha expirado. Contacta a soporte@adosiya.com', 'error');
       document.getElementById('form-section').style.display = 'none';
       return;
     }
     if (params.access_token && params.refresh_token) {
-      const { error } = await client.auth.setSession({
-        access_token:  params.access_token,
-        refresh_token: params.refresh_token
-      });
-      if (error) {
+      var result = await client.auth.setSession({ access_token: params.access_token, refresh_token: params.refresh_token });
+      if (result.error) {
         showMsg('El link ha expirado. Contacta a soporte@adosiya.com', 'error');
         document.getElementById('form-section').style.display = 'none';
       }
     } else {
-      showMsg('Link inválido. Contacta a soporte@adosiya.com', 'error');
+      showMsg('Link invalido. Contacta a soporte@adosiya.com', 'error');
       document.getElementById('form-section').style.display = 'none';
     }
   }
 
   async function establecerContrasena() {
-    const pass1 = document.getElementById('pass1').value;
-nst pass2 = document.getElementById('pass2').value;
+    var pass1 = document.getElementById('pass1').value;
+    var pass2 = document.getElementById('pass2').value;
     clearMsg();
-
-    if (pass1.length < 8) {
-      showMsg('La contraseña debe tener al menos 8 caracteres.', 'error'); return;
-    }
-    if (pass1 !== pass2) {
-      showMsg('Las contraseñas no coinciden.', 'error'); return;
-    }
-
-    const btn = document.getElementById('btn');
+    if (pass1.length < 8) { showMsg('La contrasena debe tener al menos 8 caracteres.', 'error'); return; }
+    if (pass1 !== pass2) { showMsg('Las contrasenas no coinciden.', 'error'); return; }
+    var btn = document.getElementById('btn');
     btn.disabled = true;
     btn.textContent = 'Procesando...';
-
-    const { error } = await client.auth.updateUser({ password: pass1 });
-
-    if (error) {
-      showMsg('Error: ' + error.message, 'error');
+    var result = await client.auth.updateUser({ password: pass1 });
+    if (result.error) {
+      showMsg('Error: ' + result.error.message, 'error');
       btn.disabled = false;
       btn.textContent = 'Activar cuenta';
     } else {
       document.getElementById('form-section').style.display = 'none';
-showMsg('Tu contraseña fue establecida correctamente. Ya puedes iniciar sesión en el plugin ADOS.', 'success');
+      document.getElementById('titulo').textContent = 'Cuenta activada!';
+      showMsg('Tu contrasena fue establecida. Ya puedes iniciar sesion en el plugin ADOS
     }
   }
 
   function showMsg(text, type) {
-    const el = document.getElementById('msg');
+    var el = document.getElementById('msg');
     el.textContent = text;
     el.className = 'msg ' + type;
   }
-  function clearMsg() {
-    const el = document.getElementById('msg');
-    el.className = 'msg';
-  }
+  function clearMsg() { document.getElementById('msg').className = 'msg'; }
 
   init();
 </script>
