@@ -11,43 +11,6 @@
       font-family: 'Segoe UI', sans-serif;
       background: #EFEFEF;
       min-height: 100vh;
-        btn.textContent = 'Activar cuenta';
-      } else {
-        document.getElementById('form-section').style.display = 'none';
-        document.getElementById('titulo').textContent = '¡Cuenta activada!';
-        showMsg('Tu contraseña fue establecida correctamente. Ya puedes iniciar sesión en el plugin ADOS.', 'success');
-      }
-    }
-tion showMsg(text, type) {
-      const el = document.getElementById('msg');
-      el.textContent = text;
-      el.className = 'msg ' + type;
-    }
-    function clearMsg() {
-      const el = document.getElementById('msg');
-      el.className = 'msg';
-    }
-
-    init();
-  </script>
-  </body>
-  </html> no lo veo
-
-El archivo en GitHub tiene la versión vieja todavía. Reemplaza todo el contenido con esto:
-
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Activar cuenta — ADOS Software</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #EFEFEF;
-      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
