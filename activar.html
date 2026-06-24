@@ -11,6 +11,43 @@
       font-family: 'Segoe UI', sans-serif;
       background: #EFEFEF;
       min-height: 100vh;
+        btn.textContent = 'Activar cuenta';
+      } else {
+        document.getElementById('form-section').style.display = 'none';
+        document.getElementById('titulo').textContent = '¡Cuenta activada!';
+        showMsg('Tu contraseña fue establecida correctamente. Ya puedes iniciar sesión en el plugin ADOS.', 'success');
+      }
+    }
+tion showMsg(text, type) {
+      const el = document.getElementById('msg');
+      el.textContent = text;
+      el.className = 'msg ' + type;
+    }
+    function clearMsg() {
+      const el = document.getElementById('msg');
+      el.className = 'msg';
+    }
+
+    init();
+  </script>
+  </body>
+  </html> no lo veo
+
+El archivo en GitHub tiene la versión vieja todavía. Reemplaza todo el contenido con esto:
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Activar cuenta — ADOS Software</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #EFEFEF;
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -21,16 +58,15 @@
       box-shadow: 0 4px 24px rgba(0,0,0,0.12);
       padding: 40px 36px;
       width: 100%;
-      max-width: 400px;
+      max-width: 420px;
     }
     .logo {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 12px;
       margin-bottom: 8px;
     }
-    .logo img { height: 48px; }
+    .logo img { height: 64px; max-width: 260px; object-fit: contain; }
     .divider {
       border: none;
       border-top: 2px solid #E8A020;
@@ -39,7 +75,7 @@
     h2 {
       text-align: center;
       font-size: 18px;
-      color: #333;
+      color: #2C3348;
       margin-bottom: 24px;
     }
     label {
@@ -49,8 +85,7 @@
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      margin-bottom: 6px;
-    }
+
     input[type=password] {
       width: 100%;
       padding: 10px 14px;
@@ -86,32 +121,23 @@
     }
     .msg.success { background: #E8F5E9; color: #2E7D32; display: block; }
     .msg.error   { background: #FFEBEE; color: #C62828; display: block; }
-    .spinner { display: none; text-align: center; color: #666; margin-top: 12px; }
   </style>
 </head>
 <body>
 <div class="card">
   <div class="logo">
-    <svg width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="100" height="100" rx="16" fill="#E8A020"/>
-      <polygon points="50,15 85,70 15,70" fill="#fff" opacity="0.9"/>
-      <rect x="38" y="55" width="24" height="30" fill="#333" opacity="0.85"/>
-    </svg>
-    <span style="font-size:22px;font-weight:700;color:#333;letter-spacing:-0.5px;">ADOS</span>
+    <img src="2.TITULOADOS.png" alt="ADOS Ingeniería y Arquitectura SAS" />
   </div>
   <hr class="divider"/>
   <h2 id="titulo">Establece tu contraseña</h2>
 
-  <div id="form-section">
-    <label>Nueva contraseña</label>
-    <input type="password" id="pass1" placeholder="Mínimo 8 caracteres" />
+nput type="password" id="pass1" placeholder="Mínimo 8 caracteres" />
     <label>Confirmar contraseña</label>
     <input type="password" id="pass2" placeholder="Repite la contraseña" />
     <button id="btn" onclick="establecerContrasena()">Activar cuenta</button>
   </div>
 
   <div id="msg" class="msg"></div>
-  <div class="spinner" id="spinner">Procesando...</div>
 </div>
 
 <script>
@@ -129,10 +155,7 @@
     return params;
   }
 
-  async function init() {
-    const params = parseHash();
-    if (params.error) {
-      showMsg('El link es inválido o ha expirado. Contacta a soporte@adosiya.com', 'error');
+showMsg('El link es inválido o ha expirado. Contacta a soporte@adosiya.com', 'error');
       document.getElementById('form-section').style.display = 'none';
       return;
     }
@@ -153,7 +176,7 @@
 
   async function establecerContrasena() {
     const pass1 = document.getElementById('pass1').value;
-    const pass2 = document.getElementById('pass2').value;
+nst pass2 = document.getElementById('pass2').value;
     clearMsg();
 
     if (pass1.length < 8) {
@@ -175,8 +198,7 @@
       btn.textContent = 'Activar cuenta';
     } else {
       document.getElementById('form-section').style.display = 'none';
-      document.getElementById('titulo').textContent = '¡Cuenta activada!';
-      showMsg('Tu contraseña fue establecida correctamente. Ya puedes iniciar sesión en el plugin ADOS.', 'success');
+showMsg('Tu contraseña fue establecida correctamente. Ya puedes iniciar sesión en el plugin ADOS.', 'success');
     }
   }
 
