@@ -1002,7 +1002,7 @@ footer{background:var(--bg-deep); border-top:1px solid var(--border); padding:va
     <p class="lead reveal" style="margin:var(--s4) auto 0; text-align:center;">ADOS está optimizado para las versiones más recientes de Revit Structure.</p>
     <div class="ver-grid">
 
-      <div class="ver-card reveal" data-ver="2024" data-download="https://github.com/fredyandresc97-art/ados-revit/releases/latest/download/ADOS.Revit_Setup_1.0.2.exe">
+      <div class="ver-card reveal" data-ver="2024" data-download="https://github.com/fredyandresc97-art/ados-revit/releases/download/2024-v1.0.3/ADOS.Revit_Setup_1.0.3.exe">
         <div class="ver-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
         <div class="ver-year">2024</div>
         <span class="ver-badge ver-badge-ok">
@@ -1011,7 +1011,7 @@ footer{background:var(--bg-deep); border-top:1px solid var(--border); padding:va
         </span>
       </div>
 
-      <div class="ver-card reveal" data-ver="2025" data-download="https://github.com/fredyandresc97-art/ados-revit/releases/latest/download/ADOS.Revit_Setup_1.0.2.exe">
+      <div class="ver-card reveal" data-ver="2025">
         <div class="ver-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
         <div class="ver-year">2025</div>
         <span class="ver-badge ver-badge-ok">
@@ -1020,7 +1020,7 @@ footer{background:var(--bg-deep); border-top:1px solid var(--border); padding:va
         </span>
       </div>
 
-      <div class="ver-card reveal" data-ver="2026" data-download="https://github.com/fredyandresc97-art/ados-revit/releases/latest/download/ADOS.Revit_Setup_1.0.2.exe">
+      <div class="ver-card reveal" data-ver="2026">
         <div class="ver-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
         <div class="ver-year">2026</div>
         <span class="ver-badge ver-badge-ok">
@@ -1041,7 +1041,7 @@ footer{background:var(--bg-deep); border-top:1px solid var(--border); padding:va
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
         <span id="ver-download-label">Descargar ADOS</span>
       </a>
-      <p class="ver-download-note">Necesitarás tu clave de activación para usarlo. La recibes al suscribirte.</p>
+      <p class="ver-download-note" id="ver-download-note">Necesitarás tu clave de activación para usarlo. La recibes al suscribirte.</p>
     </div>
 
     <p class="ver-note reveal">Selecciona tu versión · <strong>Revit Structure 2024, 2025 y 2026 están totalmente soportados</strong> — incluyendo actualizaciones automáticas.</p>
@@ -1483,12 +1483,21 @@ function iconSvg(key){
   const downloadWrap = document.getElementById('ver-download');
   const downloadBtn = document.getElementById('ver-download-btn');
   const downloadLabel = document.getElementById('ver-download-label');
+  const downloadNote = document.getElementById('ver-download-note');
   cards.forEach(card=>{
     card.addEventListener('click', ()=>{
       cards.forEach(c=>c.classList.remove('selected'));
       card.classList.add('selected');
-      downloadBtn.href = card.dataset.download;
-      downloadLabel.textContent = 'Descargar ADOS ' + card.dataset.ver;
+      const link = card.dataset.download;
+      if(link){
+        downloadBtn.href = link;
+        downloadBtn.style.display = '';
+        downloadLabel.textContent = 'Descargar ADOS ' + card.dataset.ver;
+        downloadNote.textContent = 'Necesitarás tu clave de activación para usarlo. La recibes al suscribirte.';
+      } else {
+        downloadBtn.style.display = 'none';
+        downloadNote.textContent = 'El instalador para Revit ' + card.dataset.ver + ' estará disponible muy pronto.';
+      }
       downloadWrap.classList.add('show');
     });
   });
