@@ -600,6 +600,54 @@ section.light .tag-ghost{border-color:var(--border-light); color:var(--text-on-l
 }
 .wa-float svg{width:30px; height:30px;}
 
+/* ---------- Versiones de Revit ---------- */
+#versiones{position:relative;}
+#versiones::before{content:""; position:absolute; inset:0; pointer-events:none; z-index:0; background:radial-gradient(ellipse 55% 70% at 15% 50%, rgba(26,33,41,0.90) 0%, transparent 70%);}
+#versiones .container{position:relative; z-index:1; text-align:center;}
+.ver-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:var(--gutter); margin-top:var(--s7);}
+@media(max-width:760px){.ver-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:420px){.ver-grid{grid-template-columns:1fr 1fr;}}
+.ver-card{
+  position:relative; padding:var(--s5) var(--s4);
+  border:1px solid var(--border); border-radius:var(--r-ui);
+  background:linear-gradient(to top,#0C0F12 0%,#161c24 100%);
+  cursor:pointer; text-align:center;
+  transition:border-color var(--dur-base) var(--ease-std), box-shadow var(--dur-base) var(--ease-std), transform 250ms var(--ease-out);
+  user-select:none;
+}
+.ver-card:hover{border-color:rgba(249,178,51,0.45); transform:translateY(-4px);}
+.ver-card.selected{
+  border-color:var(--accent);
+  box-shadow:0 0 0 1px var(--accent), 0 0 22px 4px rgba(249,178,51,0.20);
+  background:linear-gradient(to top,#0C0F12 0%,#1e2a38 100%);
+}
+.ver-card.coming{cursor:default; opacity:0.52;}
+.ver-card.coming:hover{border-color:var(--border); transform:none;}
+.ver-year{
+  font-family:var(--font-display); font-size:clamp(2rem,4vw,2.8rem);
+  font-weight:700; letter-spacing:var(--tracking-tight);
+  color:var(--text); line-height:1; margin-bottom:var(--s3);
+}
+.ver-card.selected .ver-year{color:var(--accent);}
+.ver-badge{
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:0.7rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase;
+  padding:4px 10px; border-radius:var(--r-pill);
+}
+.ver-badge-ok{background:rgba(47,138,138,0.15); color:#5cb8b8; border:1px solid rgba(47,138,138,0.35);}
+.ver-badge-soon{background:rgba(249,178,51,0.10); color:var(--accent); border:1px solid rgba(249,178,51,0.25);}
+.ver-check{display:none; position:absolute; top:10px; right:10px; width:20px; height:20px; border-radius:50%; background:var(--accent); align-items:center; justify-content:center;}
+.ver-card.selected .ver-check{display:flex;}
+.ver-check svg{width:11px; height:11px; color:var(--on-accent);}
+.ver-note{margin-top:var(--s6); font-size:0.88rem; color:var(--text-faint);}
+.ver-note strong{color:var(--text-muted);}
+.ver-download{
+  display:none; flex-direction:column; align-items:center; gap:var(--s3);
+  margin-top:var(--s6);
+}
+.ver-download.show{display:flex;}
+.ver-download-note{font-size:0.82rem; color:var(--text-faint);}
+
 /* ---------- Garantía ---------- */
 .garantia-wrap{background:#0C0F12; padding:var(--s5) 0 var(--s8);}
 .garantia-card{
@@ -941,6 +989,62 @@ footer{background:var(--bg-deep); border-top:1px solid var(--border); padding:va
         <p>Soy ingeniero civil con posgrado en <strong>Master BIM Manager</strong>, con años de experiencia liderando proyectos de obra civil y estructurales implementando la metodología BIM y usando Revit como software principal. En ese día a día me di cuenta de que las tareas más repetitivas — el modelado del acero de refuerzo, la generación de planos y la documentación — consumían la mayor parte del tiempo del equipo. ADOS nació de esa frustración: una herramienta construida por un ingeniero, para ingenieros y arquitectos.</p>
       </div>
     </div>
+  </div>
+</section>
+
+<hr style="border:none; border-top:1px solid rgba(255,255,255,0.08); margin:0;">
+
+<!-- ============ VERSIONES DE REVIT ============ -->
+<section class="deep" id="versiones">
+  <div class="container">
+    <p class="eyebrow reveal">Compatibilidad</p>
+    <h2 class="reveal" style="font-size:clamp(2rem,4.6vw,3rem); margin-top:var(--s3);">¿Cuál versión de Revit usas?</h2>
+    <p class="lead reveal" style="margin:var(--s4) auto 0; text-align:center;">ADOS está optimizado para las versiones más recientes de Revit Structure.</p>
+    <div class="ver-grid">
+
+      <div class="ver-card reveal" data-ver="2024" data-download="https://github.com/fredyandresc97-art/ados-revit/releases/latest/download/ADOS.Revit_Setup_1.0.2.exe">
+        <div class="ver-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+        <div class="ver-year">2024</div>
+        <span class="ver-badge ver-badge-ok">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          Compatible
+        </span>
+      </div>
+
+      <div class="ver-card reveal" data-ver="2025" data-download="https://github.com/fredyandresc97-art/ados-revit/releases/latest/download/ADOS.Revit_Setup_1.0.2.exe">
+        <div class="ver-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+        <div class="ver-year">2025</div>
+        <span class="ver-badge ver-badge-ok">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          Compatible
+        </span>
+      </div>
+
+      <div class="ver-card reveal" data-ver="2026" data-download="https://github.com/fredyandresc97-art/ados-revit/releases/latest/download/ADOS.Revit_Setup_1.0.2.exe">
+        <div class="ver-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+        <div class="ver-year">2026</div>
+        <span class="ver-badge ver-badge-ok">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          Compatible
+        </span>
+      </div>
+
+      <div class="ver-card coming reveal" data-ver="2027">
+        <div class="ver-year">2027</div>
+        <span class="ver-badge ver-badge-soon">Muy pronto</span>
+      </div>
+
+    </div>
+
+    <div class="ver-download" id="ver-download">
+      <a href="#" target="_blank" rel="noopener" class="btn btn-primary btn-neon" id="ver-download-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+        <span id="ver-download-label">Descargar ADOS</span>
+      </a>
+      <p class="ver-download-note">Necesitarás tu clave de activación para usarlo. La recibes al suscribirte.</p>
+    </div>
+
+    <p class="ver-note reveal">Selecciona tu versión · <strong>Revit Structure 2024, 2025 y 2026 están totalmente soportados</strong> — incluyendo actualizaciones automáticas.</p>
   </div>
 </section>
 
@@ -1370,6 +1474,23 @@ function iconSvg(key){
     v.setAttribute('src', path);
     const p = v.play();
     if(p && p.catch) p.catch(()=>{});
+  });
+})();
+
+/* ====================== VERSIONES SELECTOR ====================== */
+(function initVersiones(){
+  const cards = document.querySelectorAll('.ver-card:not(.coming)');
+  const downloadWrap = document.getElementById('ver-download');
+  const downloadBtn = document.getElementById('ver-download-btn');
+  const downloadLabel = document.getElementById('ver-download-label');
+  cards.forEach(card=>{
+    card.addEventListener('click', ()=>{
+      cards.forEach(c=>c.classList.remove('selected'));
+      card.classList.add('selected');
+      downloadBtn.href = card.dataset.download;
+      downloadLabel.textContent = 'Descargar ADOS ' + card.dataset.ver;
+      downloadWrap.classList.add('show');
+    });
   });
 })();
 
