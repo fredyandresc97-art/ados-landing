@@ -498,12 +498,24 @@ section.light .tag-ghost{border-color:var(--border-light); color:var(--text-on-l
 .dest-panel{display:none;}
 .dest-panel.active{display:block;}
 .dest-screen{
-  width:100%; border-radius:var(--r-ui); overflow:hidden;
+  position:relative; width:100%; border-radius:var(--r-ui); overflow:hidden;
   border:1px solid var(--border);
   background:linear-gradient(135deg, #161c24 0%, #0C0F12 100%);
   aspect-ratio:16/9; display:flex; align-items:center; justify-content:center;
   box-shadow:0 32px 80px rgba(0,0,0,0.6);
 }
+.dest-screen img{width:100%; height:100%; object-fit:cover; display:block;}
+.dest-yt-btn{
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:72px; height:72px; border-radius:50%;
+  background:rgba(0,0,0,0.72); color:#fff; border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:background 200ms var(--ease-std), transform 200ms var(--ease-std);
+  z-index:2;
+}
+.dest-yt-btn:hover{background:var(--accent); transform:translate(-50%,-50%) scale(1.08);}
+.dest-yt-btn svg{width:30px; height:30px; margin-left:5px;}
+.dest-yt-frame{position:absolute; inset:0; width:100%; height:100%; border:none; z-index:3; display:block;}
 .dest-screen-ph{
   display:flex; flex-direction:column; align-items:center; gap:var(--s3);
   color:var(--text-faint);
@@ -722,7 +734,20 @@ footer{background:var(--bg-deep); border-top:1px solid var(--border); padding:va
   cursor:pointer; will-change:transform,opacity;
 }
 @media(max-width:560px){.demo-slide{width:78%;}}
-.demo-slide video{width:100%; height:100%; object-fit:cover; display:block;}
+.demo-slide video,.demo-slide img{width:100%; height:100%; object-fit:cover; display:block;}
+.demo-yt-btn{
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-54%);
+  width:60px; height:60px; border-radius:50%;
+  background:rgba(0,0,0,0.72); color:#fff; border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; pointer-events:none;
+  transition:background 200ms var(--ease-std), opacity 200ms var(--ease-std), transform 200ms var(--ease-std);
+  z-index:3;
+}
+.demo-slide.is-active .demo-yt-btn{opacity:1; pointer-events:auto;}
+.demo-yt-btn:hover{background:var(--accent); transform:translate(-50%,-54%) scale(1.08);}
+.demo-yt-btn svg{width:26px; height:26px; margin-left:4px;}
+.demo-yt-frame{position:absolute; inset:0; width:100%; height:100%; border:none; z-index:4; display:block;}
 .demo-slide:not(.is-active) .demo-overlay{opacity:0;}
 .demo-overlay{
   position:absolute; bottom:0; left:0; right:0; z-index:2; pointer-events:none;
@@ -860,16 +885,28 @@ footer{background:var(--bg-deep); border-top:1px solid var(--border); padding:va
     </div>
     <div class="dest-panels">
       <div class="dest-panel active" data-panel="0">
-        <div class="dest-screen"><video src="videos/V-D1.mp4" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video></div>
+        <div class="dest-screen">
+          <img src="https://img.youtube.com/vi/Qz-krrEtMck/maxresdefault.jpg" alt="Secc. Long. Vigas">
+          <button class="dest-yt-btn" data-yt="Qz-krrEtMck" aria-label="Reproducir"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+        </div>
       </div>
       <div class="dest-panel" data-panel="1">
-        <div class="dest-screen"><video src="videos/V-D2.mp4" muted loop playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;display:block;"></video></div>
+        <div class="dest-screen">
+          <img src="https://img.youtube.com/vi/rbdnqo8b2bo/maxresdefault.jpg" alt="Alzado Columnas">
+          <button class="dest-yt-btn" data-yt="rbdnqo8b2bo" aria-label="Reproducir"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+        </div>
       </div>
       <div class="dest-panel" data-panel="2">
-        <div class="dest-screen"><video src="videos/V-D3.mp4" muted loop playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;display:block;"></video></div>
+        <div class="dest-screen">
+          <img src="https://img.youtube.com/vi/TyGSMcd7D0o/maxresdefault.jpg" alt="Acero Columnas">
+          <button class="dest-yt-btn" data-yt="TyGSMcd7D0o" aria-label="Reproducir"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+        </div>
       </div>
       <div class="dest-panel" data-panel="3">
-        <div class="dest-screen"><video src="videos/V-D4.mp4" muted loop playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;display:block;"></video></div>
+        <div class="dest-screen">
+          <img src="https://img.youtube.com/vi/JvOD4muAZ4E/maxresdefault.jpg" alt="Acotado por Puntos">
+          <button class="dest-yt-btn" data-yt="JvOD4muAZ4E" aria-label="Reproducir"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+        </div>
       </div>
     </div>
   </div>
@@ -1222,26 +1259,26 @@ const PANELS = [
 ];
 
 const DEMOS = [
-  // Panel 1 — Aceros
-  ['Aceros','Acero C. Corridos','Crea acero de forma automática en cimientos corridos.','videos/V-P1-1.mp4'],
-  ['Aceros','Acero Columnas','Crea acero longitudinal de manera automática en las columnas del modelo.','videos/V-P1-2.mp4'],
-  ['Aceros','Acero Muros','Crea refuerzos en los muros del modelo.','videos/V-P1-3.mp4'],
-  ['Aceros','Acero Vigas','Crea acero longitudinal de manera automática en vigas.','videos/V-P1-4.mp4'],
-  ['Aceros','Acero V. Continuas','Crea acero longitudinal en vigas continuas considerando todas las columnas que las atraviesan.','videos/V-P1-5.mp4'],
+  // Panel 1 — Aceros  [categoría, nombre, descripción, video local, YouTube ID]
+  ['Aceros','Acero C. Corridos','Crea acero de forma automática en cimientos corridos.','videos/V-P1-1.mp4','hAt19rGVUyc'],
+  ['Aceros','Acero Columnas','Crea acero longitudinal de manera automática en las columnas del modelo.','videos/V-P1-2.mp4','MEIWp9eAH8U'],
+  ['Aceros','Acero Muros','Crea refuerzos en los muros del modelo.','videos/V-P1-3.mp4','JgW-E3pcihQ'],
+  ['Aceros','Acero Vigas','Crea acero longitudinal de manera automática en vigas.','videos/V-P1-4.mp4','Y-j3oYJFICY'],
+  ['Aceros','Acero V. Continuas','Crea acero longitudinal en vigas continuas considerando todas las columnas que las atraviesan.','videos/V-P1-5.mp4','0vWpQPmMIsY'],
   // Panel 2 — Documentación
-  ['Documentación','Acotar Columnas','Genera automáticamente el acotado de columnas en las vistas del modelo.','videos/V-P2-1.mp4'],
-  ['Documentación','Acotar Ejes','Acota los ejes estructurales del modelo de forma automática.','videos/V-P2-2.mp4'],
-  ['Documentación','Acotar Cimientos','Genera el acotado de cimientos en las vistas de planta.','videos/V-P2-3.mp4'],
-  ['Documentación','Generar Planos','Crea planos de documentación a partir de las vistas del modelo.','videos/V-P2-4.mp4'],
-  ['Documentación','Asignar Marca','Asigna marcas a los elementos estructurales del modelo automáticamente.','videos/V-P2-5.mp4'],
-  ['Documentación','Renombrar Planos','Renombra los planos del proyecto siguiendo una nomenclatura definida.','videos/V-P2-6.mp4'],
-  ['Documentación','Sección Zapatas','Genera secciones transversales de zapatas en el modelo.','videos/V-P2-7.mp4'],
-  ['Documentación','Acotado por Puntos','Acota elementos estructurales tomando puntos de referencia del modelo.','videos/V-P2-8.mp4'],
-  ['Documentación','Alzado Columnas','Genera alzados de columnas con su detallamiento automáticamente.','videos/V-P2-9-1.mp4'],
-  ['Documentación','Secciones Columnas','Crea secciones transversales de columnas con refuerzo incluido.','videos/V-P2-9-2.mp4'],
-  ['Documentación','Secc. Long. Vigas','Genera la sección longitudinal de vigas con su acero de refuerzo.','videos/V-P2-10-1.mp4'],
-  ['Documentación','Secc. Trans. Vigas','Crea secciones transversales de vigas en las posiciones definidas.','videos/V-P2-10-2.mp4'],
-  ['Documentación','Secc. Elem. Estructurales','Genera secciones de los elementos estructurales seleccionados.','videos/V-P2-10-3.mp4'],
+  ['Documentación','Acotar Columnas','Genera automáticamente el acotado de columnas en las vistas del modelo.','videos/V-P2-1.mp4','w9oBG9_qFbA'],
+  ['Documentación','Acotar Ejes','Acota los ejes estructurales del modelo de forma automática.','videos/V-P2-2.mp4',null],
+  ['Documentación','Acotar Cimientos','Genera el acotado de cimientos en las vistas de planta.','videos/V-P2-3.mp4',null],
+  ['Documentación','Generar Planos','Crea planos de documentación a partir de las vistas del modelo.','videos/V-P2-4.mp4',null],
+  ['Documentación','Asignar Marca','Asigna marcas a los elementos estructurales del modelo automáticamente.','videos/V-P2-5.mp4','x0wxp95X9JY'],
+  ['Documentación','Renombrar Planos','Renombra los planos del proyecto siguiendo una nomenclatura definida.','videos/V-P2-6.mp4',null],
+  ['Documentación','Sección Zapatas','Genera secciones transversales de zapatas en el modelo.','videos/V-P2-7.mp4',null],
+  ['Documentación','Acotado por Puntos','Acota elementos estructurales tomando puntos de referencia del modelo.','videos/V-P2-8.mp4',null],
+  ['Documentación','Alzado Columnas','Genera alzados de columnas con su detallamiento automáticamente.','videos/V-P2-9-1.mp4',null],
+  ['Documentación','Secciones Columnas','Crea secciones transversales de columnas con refuerzo incluido.','videos/V-P2-9-2.mp4','n83lQ-w5oLA'],
+  ['Documentación','Secc. Long. Vigas','Genera la sección longitudinal de vigas con su acero de refuerzo.','videos/V-P2-10-1.mp4','mTaM_wSrT4Q'],
+  ['Documentación','Secc. Trans. Vigas','Crea secciones transversales de vigas en las posiciones definidas.','videos/V-P2-10-2.mp4','eIKDpJRVF2g'],
+  ['Documentación','Secc. Elem. Estructurales','Genera secciones de los elementos estructurales seleccionados.','videos/V-P2-10-3.mp4','k_MTvNG24AY'],
 ];
 
 const FAQ = [
@@ -1366,6 +1403,7 @@ function iconSvg(key){
         slide.style.filter = 'brightness(0.48)';
         slide.style.boxShadow = 'none';
         const v = slide.querySelector('video'); if(v) v.pause();
+        removeYtFrame(slide);
       } else if(abs === 2){
         slide.style.transform = 'translateX('+(dir*108)+'%) rotateY('+(-dir*46)+'deg) scale(0.65)';
         slide.style.opacity = '0.38';
@@ -1373,12 +1411,14 @@ function iconSvg(key){
         slide.style.filter = 'brightness(0.28)';
         slide.style.boxShadow = 'none';
         const v = slide.querySelector('video'); if(v) v.pause();
+        removeYtFrame(slide);
       } else {
         slide.style.transform = 'translateX('+(dir*140)+'%) scale(0.5)';
         slide.style.opacity = '0';
         slide.style.zIndex = '1';
         slide.style.filter = 'brightness(0.2)';
         const v = slide.querySelector('video'); if(v) v.pause();
+        removeYtFrame(slide);
       }
     });
     root.querySelectorAll('.demo-dot').forEach((d,i)=> d.classList.toggle('active', i===current));
@@ -1392,11 +1432,21 @@ function iconSvg(key){
     setTimeout(()=>{ animating = false; }, 580);
   }
 
+  function removeYtFrame(slide){
+    const f = slide.querySelector('.demo-yt-frame'); if(f) f.remove();
+  }
+
   // Build DOM once
   let slides = '', dots = '';
   DEMOS.forEach((d,i)=>{
+    const ytId = d[4];
+    const media = ytId
+      ? '<img src="https://img.youtube.com/vi/'+ytId+'/maxresdefault.jpg" alt="'+d[1]+'" loading="lazy">'
+        + '<button class="demo-yt-btn" data-yt="'+ytId+'" aria-label="Reproducir '+d[1]+'">'
+        + '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>'
+      : '<video muted loop playsinline preload="metadata"'+(hasVideo(d[3])?' src="'+d[3]+'"':'')+' style="width:100%;height:100%;object-fit:cover;display:block;"></video>';
     slides += '<div class="demo-slide" data-i="'+i+'">'
-      + '<video muted loop playsinline preload="metadata"'+(hasVideo(d[3])?' src="'+d[3]+'"':'')+' style="width:100%;height:100%;object-fit:cover;display:block;"></video>'
+      + media
       + '<div class="demo-overlay">'
       + '<span class="demo-overlay-k">'+d[0]+'</span>'
       + '<span class="demo-overlay-sep">·</span>'
@@ -1412,27 +1462,65 @@ function iconSvg(key){
     + '</div>'
     + '<div class="demo-dots">'+dots+'</div>';
 
-  root.querySelector('.demo-arrow.prev').addEventListener('click', ()=>{ go((current-1+n)%n); });
-  root.querySelector('.demo-arrow.next').addEventListener('click', ()=>{ go((current+1)%n); });
-  root.querySelectorAll('.demo-dot').forEach(d=> d.addEventListener('click', ()=>{ go(parseInt(d.dataset.i)); }));
-  root.querySelectorAll('.demo-slide').forEach(slide=> slide.addEventListener('click', ()=>{
-    const i = parseInt(slide.dataset.i);
-    if(i !== current) go(i);
+  root.querySelector('.demo-arrow.prev').addEventListener('click', ()=>{
+    root.querySelectorAll('.demo-slide').forEach(removeYtFrame);
+    go((current-1+n)%n);
+  });
+  root.querySelector('.demo-arrow.next').addEventListener('click', ()=>{
+    root.querySelectorAll('.demo-slide').forEach(removeYtFrame);
+    go((current+1)%n);
+  });
+  root.querySelectorAll('.demo-dot').forEach(d=> d.addEventListener('click', ()=>{
+    root.querySelectorAll('.demo-slide').forEach(removeYtFrame);
+    go(parseInt(d.dataset.i));
   }));
+  root.querySelectorAll('.demo-slide').forEach(slide=> slide.addEventListener('click', e=>{
+    if(e.target.closest('.demo-yt-btn')) return;
+    const i = parseInt(slide.dataset.i);
+    if(i !== current){ removeYtFrame(slide); go(i); }
+  }));
+  root.addEventListener('click', e=>{
+    const btn = e.target.closest('.demo-yt-btn');
+    if(!btn) return;
+    const slide = btn.closest('.demo-slide');
+    if(!slide.classList.contains('is-active')) return;
+    if(slide.querySelector('.demo-yt-frame')){ removeYtFrame(slide); btn.style.opacity='1'; return; }
+    btn.style.opacity = '0';
+    const frame = document.createElement('iframe');
+    frame.className = 'demo-yt-frame';
+    frame.src = 'https://www.youtube.com/embed/'+btn.dataset.yt+'?autoplay=1&rel=0&modestbranding=1';
+    frame.allow = 'autoplay; encrypted-media; fullscreen';
+    frame.allowFullscreen = true;
+    slide.appendChild(frame);
+  });
 
   applyCovers();
 })();
 
 (function initDestacados(){
+  function removeDestFrame(panel){
+    const f = panel.querySelector('.dest-yt-frame'); if(f) f.remove();
+  }
   document.querySelectorAll('.dest-tab').forEach(tab=>{
     tab.addEventListener('click', ()=>{
       const idx = tab.dataset.tab;
       document.querySelectorAll('.dest-tab').forEach(t=>t.classList.remove('active'));
-      document.querySelectorAll('.dest-panel').forEach(p=>{ p.classList.remove('active'); const v=p.querySelector('video'); if(v) v.pause(); });
+      document.querySelectorAll('.dest-panel').forEach(p=>{ p.classList.remove('active'); removeDestFrame(p); });
       tab.classList.add('active');
-      const panel = document.querySelector('.dest-panel[data-panel="'+idx+'"]');
-      panel.classList.add('active');
-      const v = panel.querySelector('video'); if(v){ const p=v.play(); if(p&&p.catch) p.catch(()=>{}); }
+      document.querySelector('.dest-panel[data-panel="'+idx+'"]').classList.add('active');
+    });
+  });
+  document.querySelectorAll('.dest-yt-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const screen = btn.closest('.dest-screen');
+      if(screen.querySelector('.dest-yt-frame')){ return; }
+      btn.style.display = 'none';
+      const frame = document.createElement('iframe');
+      frame.className = 'dest-yt-frame';
+      frame.src = 'https://www.youtube.com/embed/'+btn.dataset.yt+'?autoplay=1&rel=0&modestbranding=1';
+      frame.allow = 'autoplay; encrypted-media; fullscreen';
+      frame.allowFullscreen = true;
+      screen.appendChild(frame);
     });
   });
 })();
