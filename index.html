@@ -326,6 +326,19 @@ section.light .tag-ghost{border-color:var(--border-light); color:var(--text-on-l
 .ptool-name{font-family:var(--font-display); font-weight:600; font-size:0.9rem; color:var(--text); line-height:1.2;}
 .ptool-desc{font-size:0.78rem; color:var(--text-muted); margin-top:2px; line-height:1.4;}
 .ptool-divider{height:1px; background:var(--border); margin:var(--s2) 0;}
+.ptool[data-yt]{cursor:pointer;}
+.ptool[data-yt]:hover .ptool-ic{border-color:rgba(249,178,51,0.55);}
+.yt-tag{
+  flex-shrink:0; display:inline-flex; align-items:center; gap:3px;
+  font-size:0.62rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
+  color:var(--accent); white-space:nowrap; pointer-events:none;
+  opacity:0; transform:translateX(6px);
+  transition:opacity 180ms var(--ease-std), transform 180ms var(--ease-std);
+}
+.ptool[data-yt]:hover .yt-tag{opacity:1; transform:translateX(0);}
+.tool[data-yt]{cursor:pointer;}
+.tool .yt-tag{transform:none; margin-top:4px; color:var(--ados-amber);}
+.tool[data-yt]:hover .yt-tag{opacity:1;}
 @keyframes marquee-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 @keyframes marquee-scroll-rev{from{transform:translateX(-50%)}to{transform:translateX(0)}}
 .tools-marquee{overflow:hidden; position:relative; padding:6px 0;}
@@ -1218,14 +1231,14 @@ const ICONS = {
 
 const PANELS = [
   { name:'Aceros', tag:'Acero de refuerzo', tone:'amber', tools:[
-    ['grid','Acero C. Corridos','Crea acero de forma automática en cimientos corridos.','AceroCCorridos.png'],
-    ['column','Acero Columnas','Crea acero longitudinal de manera automática en las columnas del modelo.','AceroColumnas.png'],
-    ['wall','Acero Muros','Crea refuerzos en los muros del modelo.','AceroMuros.png'],
-    ['beam','Acero Vigas','Crea acero longitudinal de manera automática en vigas.','AceroVigas.png'],
-    ['frame','Acero V. Continuas','Crea acero longitudinal en vigas continuas considerando todas las columnas que las atraviesan.','AceroVContinuas.png'],
-    ['square','Acero Zapatas','Crea refuerzos en las zapatas del modelo.','AceroZapatas.png'],
-    ['stirrup','Estribos Columnas','Crea estribos de manera automática en las columnas del modelo.','EstribosColumnas.png'],
-    ['stirrup','Estribos Vigas','Crea estribos de manera automática en las vigas del modelo.','EstribosVigas.png'],
+    ['grid','Acero C. Corridos','Crea acero de forma automática en cimientos corridos.','AceroCCorridos.png','https://www.youtube.com/watch?v=Mpz3G6B-Yc4'],
+    ['column','Acero Columnas','Crea acero longitudinal de manera automática en las columnas del modelo.','AceroColumnas.png','https://www.youtube.com/watch?v=ImJJs5fo6cs'],
+    ['wall','Acero Muros','Crea refuerzos en los muros del modelo.','AceroMuros.png','https://www.youtube.com/watch?v=3VYO8i8QAIc'],
+    ['beam','Acero Vigas','Crea acero longitudinal de manera automática en vigas.','AceroVigas.png','https://www.youtube.com/watch?v=uoNzf4JLYQ8'],
+    ['frame','Acero V. Continuas','Crea acero longitudinal en vigas continuas considerando todas las columnas que las atraviesan.','AceroVContinuas.png','https://www.youtube.com/watch?v=tvI4J_p3Hxc'],
+    ['square','Acero Zapatas','Crea refuerzos en las zapatas del modelo.','AceroZapatas.png','https://www.youtube.com/watch?v=3emTZHFwDbQ'],
+    ['stirrup','Estribos Columnas','Crea estribos de manera automática en las columnas del modelo.','EstribosColumnas.png','https://www.youtube.com/watch?v=UGaoy8Y_Cy4'],
+    ['stirrup','Estribos Vigas','Crea estribos de manera automática en las vigas del modelo.','EstribosVigas.png','https://www.youtube.com/watch?v=jlZdlqNfKxw'],
   ]},
   { name:'Documentación', tag:'Planos, cotas y secciones', tone:'steel', tools:[
     ['dimcol','Acotar Columnas','Crea acotaciones automáticas en columnas.','AcotarColumnas.png'],
@@ -1314,8 +1327,11 @@ function iconSvg(key){
       const icon = t[3]
         ? '<img src="uploads/'+t[3]+'" alt="" width="72" height="72" loading="lazy">'
         : iconSvg(t[0]);
-      toolsHtml += '<div class="tool"><div class="tool-ic">'+icon+'</div>'
-                 + '<div class="tool-body"><h4>'+t[1]+'</h4><p>'+t[2]+'</p></div></div>';
+      const ytUrl = t[4] || '';
+      const ytTag = ytUrl ? '<span class="yt-tag"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Ver en YouTube</span>' : '';
+      toolsHtml += '<div class="tool"'+(ytUrl?' data-yt="'+ytUrl+'"':'')+'>'+
+                   '<div class="tool-ic">'+icon+'</div>'+
+                   '<div class="tool-body"><h4>'+t[1]+'</h4><p>'+t[2]+'</p>'+ytTag+'</div></div>';
     });
     const toolWidth = 216; // 200px + 16px gap
     const totalWidth = panel.tools.length * toolWidth;
@@ -1327,6 +1343,7 @@ function iconSvg(key){
     html += '<div class="tools-marquee"><div class="tools-grid" style="animation-name:'+animName+';animation-duration:'+duration+'s;animation-delay:'+delay+'s">'+toolsHtml+toolsHtml+'</div></div></div>';
   });
   root.innerHTML = html;
+  root.addEventListener('click', e=>{ const tool=e.target.closest('.tool[data-yt]'); if(tool) window.open(tool.dataset.yt,'_blank','noopener'); });
   // Keep marketing count consistent with the real tool list (account panel excluded)
   const total = PANELS.reduce((a,p)=> a + (p.account ? 0 : p.tools.length), 0);
   const mt = document.getElementById('m-tools'); if(mt) mt.textContent = total;
@@ -1349,15 +1366,19 @@ function iconSvg(key){
       const icon = t[3]
         ? '<img src="uploads/'+t[3]+'" alt="" width="40" height="40" loading="lazy">'
         : iconSvg(t[0]);
+      const ytUrl = t[4] || '';
+      const ytTag = ytUrl ? '<span class="yt-tag"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Ver en YouTube</span>' : '';
       if(ti > 0) contentHtml += '<div class="ptool-divider"></div>';
-      contentHtml += '<div class="ptool"><div class="ptool-ic">'+icon+'</div>'
-                   + '<div class="ptool-body"><div class="ptool-name">'+t[1]+'</div>'
-                   + '<div class="ptool-desc">'+t[2]+'</div></div></div>';
+      contentHtml += '<div class="ptool"'+(ytUrl?' data-yt="'+ytUrl+'"':'')+'>'+
+                     '<div class="ptool-ic">'+icon+'</div>'+
+                     '<div class="ptool-body"><div class="ptool-name">'+t[1]+'</div>'+
+                     '<div class="ptool-desc">'+t[2]+'</div></div>'+ytTag+'</div>';
     });
     contentHtml += '</div></div></div>';
   });
   bar.innerHTML = tabsHtml;
   content.innerHTML = contentHtml;
+  content.addEventListener('click', e=>{ const tool=e.target.closest('.ptool[data-yt]'); if(tool) window.open(tool.dataset.yt,'_blank','noopener'); });
   bar.addEventListener('click', e=>{
     const btn = e.target.closest('.ptab');
     if(!btn) return;
