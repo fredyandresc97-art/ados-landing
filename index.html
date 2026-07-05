@@ -335,10 +335,10 @@ section.light .tag-ghost{border-color:var(--border-light); color:var(--text-on-l
   opacity:0; transform:translateX(6px);
   transition:opacity 180ms var(--ease-std), transform 180ms var(--ease-std);
 }
-.ptool[data-yt]:hover .yt-tag{opacity:1; transform:translateX(0);}
+.ptool.yt-hover .yt-tag{opacity:1; transform:translateX(0);}
 .tool[data-yt]{cursor:pointer;}
 .tool .yt-tag{transform:none; margin-top:4px; color:var(--ados-amber);}
-.tool[data-yt]:hover .yt-tag{opacity:1;}
+.tool.yt-hover .yt-tag{opacity:1;}
 @keyframes marquee-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 @keyframes marquee-scroll-rev{from{transform:translateX(-50%)}to{transform:translateX(0)}}
 .tools-marquee{overflow:hidden; position:relative; padding:6px 0;}
@@ -1379,6 +1379,8 @@ function iconSvg(key){
   bar.innerHTML = tabsHtml;
   content.innerHTML = contentHtml;
   content.addEventListener('click', e=>{ const tool=e.target.closest('.ptool[data-yt]'); if(tool) window.open(tool.dataset.yt,'_blank','noopener'); });
+  content.addEventListener('mouseover', e=>{ const t=e.target.closest('.ptool[data-yt]'); if(t) t.classList.add('yt-hover'); });
+  content.addEventListener('mouseout',  e=>{ const t=e.target.closest('.ptool[data-yt]'); if(t) t.classList.remove('yt-hover'); });
   bar.addEventListener('click', e=>{
     const btn = e.target.closest('.ptab');
     if(!btn) return;
