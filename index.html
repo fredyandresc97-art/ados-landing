@@ -639,7 +639,7 @@ section.light .tag-ghost{border-color:var(--border-light); color:var(--text-on-l
 #versiones::before{content:""; position:absolute; inset:0; pointer-events:none; z-index:0; background:radial-gradient(ellipse 55% 70% at 15% 50%, rgba(26,33,41,0.90) 0%, transparent 70%);}
 #versiones .container{position:relative; z-index:1; text-align:center;}
 .ver-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:var(--gutter); margin-top:var(--s7);}
-@media(max-width:760px){.ver-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:760px){.ver-grid{grid-template-columns:repeat(2,1fr);} .ver-grid .ver-card:last-child{grid-column:1/-1;}}
 @media(max-width:420px){.ver-grid{grid-template-columns:1fr 1fr;}}
 .ver-card{
   position:relative; padding:var(--s5) var(--s4);
