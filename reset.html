@@ -45,31 +45,37 @@
   var SUPABASE_ANON = 'sb_publishable_SP80av9QptBAN6vVxFUKcg_Sx9132CG';
   var client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-  function parseHash() {
-    var hash = window.location.hash.substring(1);
+  function parseParams(str) {
     var params = {};
-    hash.split('&').forEach(function(p) {
+    str.split('&').forEach(function(p) {
       var parts = p.split('=');
       if (parts[0]) params[decodeURIComponent(parts[0])] = decodeURIComponent(parts[1] || '');
     });
     return params;
   }
 
+  function invalido() {
+    showMsg('El enlace es inválido o ha expirado. Solicita uno nuevo desde el plugin.', 'error');
+    document.getElementById('form-section').style.display = 'none';
+  }
+
   async function init() {
-    var params = parseHash();
-    if (params.error || !params.access_token || params.type !== 'recovery') {
-      showMsg('El enlace es inválido o ha expirado. Solicita uno nuevo desde el plugin.', 'error');
-      document.getElementById('form-section').style.display = 'none';
+    var query = parseParams(window.location.search.substring(1));
+    // Flujo nuevo (token_hash): el token se canjea aqui, en el navegador del
+    // usuario, no en el GET del link. Asi los escaneres de correo no lo queman.
+    if (query.token_hash) {
+      var res = await client.auth.verifyOtp({ token_hash: query.token_hash, type: query.type || 'recovery' });
+      if (res.error) invalido();
       return;
     }
+    // Flujo viejo (hash con access_token), por compatibilidad con links previos.
+    var hash = parseParams(window.location.hash.substring(1));
+    if (hash.error || !hash.access_token || hash.type !== 'recovery') { invalido(); return; }
     var result = await client.auth.setSession({
-      access_token:  params.access_token,
-      refresh_token: params.refresh_token
+      access_token:  hash.access_token,
+      refresh_token: hash.refresh_token
     });
-    if (result.error) {
-      showMsg('El enlace ha expirado. Solicita uno nuevo desde el plugin.', 'error');
-      document.getElementById('form-section').style.display = 'none';
-    }
+    if (result.error) invalido();
   }
 
   async function cambiarClave() {
